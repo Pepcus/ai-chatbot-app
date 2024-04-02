@@ -26,41 +26,14 @@ export function Stocks({ props: stocks }: { props: Stock[] }) {
               setMessages(currentMessages => [...currentMessages, response])
             }}
           >
-            <div
-              className={`text-xl ${
-                stock.delta > 0 ? 'text-green-600' : 'text-red-600'
-              } flex w-11 flex-row justify-center rounded-md bg-white/10 p-2`}
-            >
-              {stock.delta > 0 ? '↑' : '↓'}
-            </div>
             <div className="flex flex-col">
               <div className="bold uppercase text-zinc-300">{stock.symbol}</div>
-              <div className="text-base text-zinc-500">
-                ${stock.price.toExponential(1)}
-              </div>
-            </div>
-            <div className="ml-auto flex flex-col">
-              <div
-                className={`${
-                  stock.delta > 0 ? 'text-green-600' : 'text-red-600'
-                } bold text-right uppercase`}
-              >
-                {` ${((stock.delta / stock.price) * 100).toExponential(1)}%`}
-              </div>
-              <div
-                className={`${
-                  stock.delta > 0 ? 'text-green-700' : 'text-red-700'
-                } text-right text-base`}
-              >
-                {stock.delta.toExponential(1)}
-              </div>
             </div>
           </button>
         ))}
       </div>
       <div className="p-4 text-center text-sm text-zinc-500">
-        Note: Data and latency are simulated for illustrative purposes and
-        should not be considered as financial advice.
+        Note: Data is simulated for illustrative purposes.
       </div>
     </div>
   )
