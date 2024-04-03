@@ -1,3 +1,4 @@
+import next from 'next'
 import type { NextAuthConfig } from 'next-auth'
 
 export const authConfig = {
@@ -11,7 +12,6 @@ export const authConfig = {
       const isLoggedIn = !!auth?.user
       const isOnLoginPage = nextUrl.pathname.startsWith('/login')
       const isOnSignupPage = nextUrl.pathname.startsWith('/signup')
-
       if (isLoggedIn) {
         if (isOnLoginPage || isOnSignupPage) {
           return Response.redirect(new URL('/', nextUrl))
