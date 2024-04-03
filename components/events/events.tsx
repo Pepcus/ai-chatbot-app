@@ -15,13 +15,13 @@ export function Events({ props: events }: { props: Event[] }) {
           className="flex shrink-0 flex-col gap-1 rounded-lg bg-zinc-800 p-4"
         >
           <div className="text-sm text-zinc-400">
-            {format(parseISO(event.date), 'dd LLL, yyyy')}
+            {event.date}
           </div>
           <div className="text-base font-bold text-zinc-200">
             {event.headline}
           </div>
           <div className="text-zinc-500">
-            {event.description.slice(0, 70)}...
+            {event.description.slice(0, 500)}
           </div>
         </div>
       ))}

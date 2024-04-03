@@ -30,10 +30,6 @@ export const { auth, signIn, signOut } = NextAuth({
             saltedPassword
           )
           const hashedPassword = getStringFromBuffer(hashedPasswordBuffer)
-          console.log("=======password=======", password)
-          console.log("=======hashedPassword=======", hashedPassword)  
-          console.log("=======user password=======", user.password)  
-
       
           if (hashedPassword === user.password) {
             return user

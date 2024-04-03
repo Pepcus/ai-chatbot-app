@@ -15,16 +15,12 @@ import {
   BotCard,
   BotMessage,
   SystemMessage,
-  Stock,
   Purchase
-} from '@/components/stocks'
+} from '@/components/events'
 
 import { z } from 'zod'
-import { EventsSkeleton } from '@/components/stocks/events-skeleton'
-import { Events } from '@/components/stocks/events'
-import { StocksSkeleton } from '@/components/stocks/stocks-skeleton'
-import { Stocks } from '@/components/stocks/stocks'
-import { StockSkeleton } from '@/components/stocks/stock-skeleton'
+import { EventsSkeleton } from '@/components/events/events-skeleton'
+import { Events } from '@/components/events/events'
 import {
   formatNumber,
   runAsyncFnWithoutBlocking,
@@ -32,7 +28,7 @@ import {
   nanoid
 } from '@/lib/utils'
 import { saveChat } from '@/app/actions'
-import { SpinnerMessage, UserMessage } from '@/components/stocks/message'
+import { SpinnerMessage, UserMessage } from '@/components/events/message'
 import { Chat } from '@/lib/types'
 import { auth } from '@/auth'
 
@@ -155,7 +151,7 @@ async function submitUserMessage(content: string) {
         If the user requests assistance with onboarding, call \`start_onboarding_process\` to initiate the onboarding process.
         If the user requires information about HR policies, call \`show_hr_policies\` to display the relevant policies.
         If the user wants to discuss employee benefits, call \`list_employee_benefits\` to provide details about benefits packages.
-        If the user seeks guidance on employee relations, call \`provide_employee_relations_support\` to assist with handling employee grievances and conflicts.
+        If the user seeks guidance on salary ranges, call \`show_salary_ranges\` to assist with handling employee grievances and conflicts.
         If the user asks about performance management, call \`offer_performance_management_guidance\` to provide strategies for evaluating and improving employee performance.
         If the user inquires about training and development, call \`offer_training_and_development_assistance\` to help with creating training programs and fostering employee growth.
         If the user wants to discuss termination procedures, call \`guide_termination_process\` to provide guidance on employee termination and offboarding.
@@ -196,21 +192,52 @@ async function submitUserMessage(content: string) {
       return textNode
     },
     functions: {
-      listEmployeeBenefits: {
-        description: 'List four employee benefits.',
-        parameters: z.object({
-          stocks: z.array(
+      showSalaryRanges :{
+        description: 'List 2 salary ranges',
+        parameters:  z.object({
+          events: z.array(
             z.object({
-              symbol: z.string().describe('A brief description of the employee benefit.'),
-              price: z.number().describe('Details of the benefits with terms and conditions.'),
-              delta: z.number().describe('The change in price of the stock')
+              date: z.string().describe('A random time'),
+              headline: z.string().describe('Salary Details'),
+              description: z.string().describe('The change in salary')
             })
           )
         }),
-        render: async function* ({ stocks }) {
+        render: async function* ({ events }) {
+          aiState.done({
+            ...aiState.get(),
+            messages: [
+              ...aiState.get().messages,
+              {
+                id: nanoid(),
+                role: 'function',
+                name: 'showSalaryRanges',
+                content: JSON.stringify(events)
+              }
+            ]
+          })
+          return (
+            <BotCard>
+              <Events props={events} />
+            </BotCard>
+          )
+        }
+      },
+      listEmployeeBenefits: {
+        description: 'List four employee benefits.',
+        parameters: z.object({
+          events: z.array(
+            z.object({
+              date: z.string().describe('A random time'),
+              headline: z.string().describe('The Employee Benefit Heading'),
+              description: z.string().describe('A brief description of the benefit')
+            })
+          )
+        }),
+        render: async function* ({ events }) {
           yield (
             <BotCard>
-              <StocksSkeleton />
+              <EventsSkeleton />
             </BotCard>
           )
 
@@ -224,34 +251,33 @@ async function submitUserMessage(content: string) {
                 id: nanoid(),
                 role: 'function',
                 name: 'listEmployeeBenefits',
-                content: JSON.stringify(stocks)
+                content: JSON.stringify(events)
               }
             ]
           })
 
           return (
             <BotCard>
-              <Stocks props={stocks} />
+              <Events props={events} />
             </BotCard>
           )
         }
       },
       showHRPolicies: {
-        description:
-          'List four HR policies',
+        description: 'List four HR policies',
         parameters: z.object({
-          symbol: z
-            .string()
-            .describe(
-              'A brief description of the policy.'
-            ),
-          price: z.number().describe('Details of the policy with terms and conditions.'),
-          delta: z.number().describe('The change in price of the stock')
+          events: z.array(
+            z.object({
+              date: z.string().describe('A random time'),
+              headline: z.string().describe('Employee Benefit'),
+              description: z.string().describe('A brief description of the benefit')
+            })
+          )
         }),
-        render: async function* ({ symbol, price, delta }) {
+        render: async function* ({ events }) {
           yield (
             <BotCard>
-              <StockSkeleton />
+              <EventsSkeleton />
             </BotCard>
           )
 
@@ -265,14 +291,14 @@ async function submitUserMessage(content: string) {
                 id: nanoid(),
                 role: 'function',
                 name: 'showHRPolicies',
-                content: JSON.stringify({ symbol, price, delta })
+                content: JSON.stringify(events)
               }
             ]
           })
 
           return (
             <BotCard>
-              <Stock props={{ symbol, price, delta }} />
+              <Events props={events} />
             </BotCard>
           )
         }
@@ -428,17 +454,17 @@ export const getUIStateFromAIState = (aiState: Chat) => {
         message.role === 'function' ? (
           message.name === 'listEmployeeBenefits' ? (
             <BotCard>
-              <Stocks props={JSON.parse(message.content)} />
+              <Events props={JSON.parse(message.content)} />
             </BotCard>
           ) : message.name === 'showHRPolicies' ? (
             <BotCard>
-              <Stock props={JSON.parse(message.content)} />
+              <Events props={JSON.parse(message.content)} />
             </BotCard>
           ) : message.name === 'startOnboardingProcess' ? (
             <BotCard>
               <Purchase props={JSON.parse(message.content)} />
             </BotCard>
-          ) : message.name === 'getEvents' ? (
+          ) : message.name === 'showSalaryRanges' ? (
             <BotCard>
               <Events props={JSON.parse(message.content)} />
             </BotCard>
