@@ -2,7 +2,6 @@ import 'server-only'
 
 import {
   createAI,
-  createStreamableUI,
   getMutableAIState,
   getAIState,
   render,
@@ -11,21 +10,16 @@ import {
 import OpenAI from 'openai'
 
 import {
-  spinner,
   BotCard,
-  BotMessage,
-  SystemMessage,
-  Purchase
+  BotMessage
 } from '@/components/events'
 
 import { z } from 'zod'
-import { EventsSkeleton } from '@/components/events/events-skeleton'
-import { Events } from '@/components/events/events'
+import { Response } from '@/components/responses/response'
+import { ResponseSkeleton } from '@/components/responses/response-skeleton'
+
 import {
-  formatNumber,
-  runAsyncFnWithoutBlocking,
-  sleep,
-  nanoid
+  nanoid, sleep
 } from '@/lib/utils'
 import { saveChat } from '@/app/actions'
 import { SpinnerMessage, UserMessage } from '@/components/events/message'
@@ -36,85 +30,34 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY || ''
 })
 
-async function confirmPurchase(symbol: string, price: number, amount: number) {
+
+
+async function getDetailsFromEmployeeHandbook(query: string) {
   'use server'
 
-  const aiState = getMutableAIState<typeof AI>()
-
-  const purchasing = createStreamableUI(
-    <div className="inline-flex items-start gap-1 md:items-center">
-      {spinner}
-      <p className="mb-2">
-        Purchasing {amount} ${symbol}...
-      </p>
-    </div>
-  )
-
-  const systemMessage = createStreamableUI(null)
-
-  runAsyncFnWithoutBlocking(async () => {
-    await sleep(1000)
-
-    purchasing.update(
-      <div className="inline-flex items-start gap-1 md:items-center">
-        {spinner}
-        <p className="mb-2">
-          Purchasing {amount} ${symbol}... working on it...
-        </p>
-      </div>
-    )
-
-    await sleep(1000)
-
-    purchasing.done(
-      <div>
-        <p className="mb-2">
-          You have successfully purchased {amount} ${symbol}. Total cost:{' '}
-          {formatNumber(amount * price)}
-        </p>
-      </div>
-    )
-
-    systemMessage.done(
-      <SystemMessage>
-        You have purchased {amount} shares of {symbol} at ${price}. Total cost ={' '}
-        {formatNumber(amount * price)}.
-      </SystemMessage>
-    )
-
-    aiState.done({
-      ...aiState.get(),
-      messages: [
-        ...aiState.get().messages.slice(0, -1),
-        {
-          id: nanoid(),
-          role: 'function',
-          name: 'startOnboardingProcess',
-          content: JSON.stringify({
-            symbol,
-            price,
-            defaultAmount: amount,
-            status: 'completed'
-          })
-        },
-        {
-          id: nanoid(),
-          role: 'system',
-          content: `[User has purchased ${amount} shares of ${symbol} at ${price}. Total cost = ${
-            amount * price
-          }]`
-        }
-      ]
-    })
-  })
-
-  return {
-    purchasingUI: purchasing.value,
-    newMessage: {
-      id: nanoid(),
-      display: systemMessage.value
+  const API_SERVER_URL = process.env.API_SERVER_URL
+  let companyId = null
+  const session = await auth()
+  if (session && session.user) {
+    console.log("===============email=============", session?.user?.email)
+    const email = session?.user?.email
+    
+    if (email == 'deepak.nigam@example.com') {
+      companyId = 999
+    } else {
+      companyId = 1265
     }
+  } else {
+    companyId = 439
   }
+  console.log("===============companyId=============", companyId)
+
+  const response = await fetch(`${API_SERVER_URL}/response?companyId=${companyId}&query=${query}`);
+  if (!response.ok) {
+    throw new Error('Network response was not ok');
+  }
+  const resp = await response.json();
+  return resp
 }
 
 async function submitUserMessage(content: string) {
@@ -136,7 +79,7 @@ async function submitUserMessage(content: string) {
 
   let textStream: undefined | ReturnType<typeof createStreamableValue<string>>
   let textNode: undefined | React.ReactNode
-
+  
   const ui = render({
     model: 'gpt-3.5-turbo',
     provider: openai,
@@ -146,18 +89,30 @@ async function submitUserMessage(content: string) {
         role: 'system',
         content: `\
         You are an HR conversation bot and you can assist users with various HR-related tasks and inquiries.
-        You and the user can discuss HR processes, policies, and best practices.
-    
-        If the user requests assistance with onboarding, call \`start_onboarding_process\` to initiate the onboarding process.
-        If the user requires information about HR policies, call \`show_hr_policies\` to display the relevant policies.
-        If the user wants to discuss employee benefits, call \`list_employee_benefits\` to provide details about benefits packages.
-        If the user seeks guidance on salary ranges, call \`show_salary_ranges\` to assist with handling employee grievances and conflicts.
-        If the user asks about performance management, call \`offer_performance_management_guidance\` to provide strategies for evaluating and improving employee performance.
-        If the user inquires about training and development, call \`offer_training_and_development_assistance\` to help with creating training programs and fostering employee growth.
-        If the user wants to discuss termination procedures, call \`guide_termination_process\` to provide guidance on employee termination and offboarding.
-        If the user seeks advice on diversity and inclusion, call \`promote_diversity_and_inclusion\` to discuss initiatives for promoting diversity and creating an inclusive workplace.
-        If the user is interested in employee engagement, call \`enhance_employee_engagement\` to provide strategies for increasing employee engagement and morale.
         
+        You and the user can discuss HR processes, policies, and best practices.
+
+        If the user asks any question related to HR domain, employee handbook, HR processes, call hackthon_function to display the relevant content.
+
+        If the user asks subsequent questions related to HR domain, employee handbook, HR processes, call 'hackthon_function' again and pass user's query as an argument to it. Do this until user changes the topic. Do not add anthing from your side.
+
+        If you are not sure about any question, call 'get_details_from_employee_handbook' and pass user's query as an argument to it.
+
+        Additionally, you can engage in conversation with users and offer support as needed.`
+      },
+      {
+        role: 'assistant',
+        content: `\
+        You are an HR conversation bot and you can assist users with various HR-related tasks and inquiries.
+        
+        You and the user can discuss HR processes, policies, and best practices.
+
+        If the user asks any question related to HR domain, employee handbook, HR processes, call hackthon_function to display the relevant content.
+
+        If the user asks subsequent questions related to HR domain, employee handbook, HR processes, call 'hackthon_function' again and pass user's query as an argument to it. Do this until user changes the topic. Do not add anthing from your side.
+
+        If you are not sure about any question, call 'get_details_from_employee_handbook' and pass user's query as an argument to it.
+
         Additionally, you can engage in conversation with users and offer support as needed.`
       },
       ...aiState.get().messages.map((message: any) => ({
@@ -181,7 +136,7 @@ async function submitUserMessage(content: string) {
             {
               id: nanoid(),
               role: 'assistant',
-              content
+              content: content
             }
           ]
         })
@@ -192,57 +147,21 @@ async function submitUserMessage(content: string) {
       return textNode
     },
     functions: {
-      showSalaryRanges :{
-        description: 'List 2 salary ranges',
-        parameters:  z.object({
-          events: z.array(
-            z.object({
-              date: z.string().describe('A random time'),
-              headline: z.string().describe('Salary Details'),
-              description: z.string().describe('The change in salary')
-            })
-          )
-        }),
-        render: async function* ({ events }) {
-          aiState.done({
-            ...aiState.get(),
-            messages: [
-              ...aiState.get().messages,
-              {
-                id: nanoid(),
-                role: 'function',
-                name: 'showSalaryRanges',
-                content: JSON.stringify(events)
-              }
-            ]
-          })
-          return (
-            <BotCard>
-              <Events props={events} />
-            </BotCard>
-          )
-        }
-      },
-      listEmployeeBenefits: {
-        description: 'List four employee benefits.',
+      getDetailsFromEmployeeHandbook: {
         parameters: z.object({
-          events: z.array(
-            z.object({
-              date: z.string().describe('A random time'),
-              headline: z.string().describe('The Employee Benefit Heading'),
-              description: z.string().describe('A brief description of the benefit')
-            })
-          )
+          userQuery: z.object({
+            description: z.string()
+          })
         }),
-        render: async function* ({ events }) {
+        render: async function* ({userQuery}) {
           yield (
             <BotCard>
-              <EventsSkeleton />
+              <ResponseSkeleton />
             </BotCard>
           )
-
+          console.log("==========query before call=======", userQuery)
+          const resp = await getDetailsFromEmployeeHandbook(userQuery.description)
           await sleep(1000)
-
           aiState.done({
             ...aiState.get(),
             messages: [
@@ -250,119 +169,15 @@ async function submitUserMessage(content: string) {
               {
                 id: nanoid(),
                 role: 'function',
-                name: 'listEmployeeBenefits',
-                content: JSON.stringify(events)
+                name: 'hackthonFunction',
+                content: resp.result
               }
             ]
           })
 
           return (
             <BotCard>
-              <Events props={events} />
-            </BotCard>
-          )
-        }
-      },
-      showHRPolicies: {
-        description: 'List four HR policies',
-        parameters: z.object({
-          events: z.array(
-            z.object({
-              date: z.string().describe('A random time'),
-              headline: z.string().describe('Employee Benefit'),
-              description: z.string().describe('A brief description of the benefit')
-            })
-          )
-        }),
-        render: async function* ({ events }) {
-          yield (
-            <BotCard>
-              <EventsSkeleton />
-            </BotCard>
-          )
-
-          await sleep(1000)
-
-          aiState.done({
-            ...aiState.get(),
-            messages: [
-              ...aiState.get().messages,
-              {
-                id: nanoid(),
-                role: 'function',
-                name: 'showHRPolicies',
-                content: JSON.stringify(events)
-              }
-            ]
-          })
-
-          return (
-            <BotCard>
-              <Events props={events} />
-            </BotCard>
-          )
-        }
-      },
-      startOnboardingProcess: {
-        description:
-          'Show price and the UI to purchase a stock or currency. Use this if the user wants to purchase a stock or currency.',
-        parameters: z.object({
-          symbol: z
-            .string()
-            .describe(
-              'The name or symbol of the stock or currency. e.g. DOGE/AAPL/USD.'
-            ),
-          price: z.number().describe('The price of the stock.'),
-          numberOfShares: z
-            .number()
-            .describe(
-              'The **number of shares** for a stock or currency to purchase. Can be optional if the user did not specify it.'
-            )
-        }),
-        render: async function* ({ symbol, price, numberOfShares = 100 }) {
-          if (numberOfShares <= 0 || numberOfShares > 1000) {
-            aiState.done({
-              ...aiState.get(),
-              messages: [
-                ...aiState.get().messages,
-                {
-                  id: nanoid(),
-                  role: 'system',
-                  content: `[User has selected an invalid amount]`
-                }
-              ]
-            })
-
-            return <BotMessage content={'Invalid amount'} />
-          }
-
-          aiState.done({
-            ...aiState.get(),
-            messages: [
-              ...aiState.get().messages,
-              {
-                id: nanoid(),
-                role: 'function',
-                name: 'startOnboardingProcess',
-                content: JSON.stringify({
-                  symbol,
-                  price,
-                  numberOfShares
-                })
-              }
-            ]
-          })
-
-          return (
-            <BotCard>
-              <Purchase
-                props={{
-                  numberOfShares,
-                  symbol,
-                  price: +price,
-                  status: 'requires_action'
-                }}
-              />
+              <Response props={{description:resp.result}}/>
             </BotCard>
           )
         }
@@ -396,7 +211,7 @@ export type UIState = {
 export const AI = createAI<AIState, UIState>({
   actions: {
     submitUserMessage,
-    confirmPurchase
+    getDetailsFromEmployeeHandbook
   },
   initialUIState: [],
   initialAIState: { chatId: nanoid(), messages: [] },
@@ -452,21 +267,9 @@ export const getUIStateFromAIState = (aiState: Chat) => {
       id: `${aiState.chatId}-${index}`,
       display:
         message.role === 'function' ? (
-          message.name === 'listEmployeeBenefits' ? (
+         message.name === 'getDetailsFromEmployeeHandbook' ? (
             <BotCard>
-              <Events props={JSON.parse(message.content)} />
-            </BotCard>
-          ) : message.name === 'showHRPolicies' ? (
-            <BotCard>
-              <Events props={JSON.parse(message.content)} />
-            </BotCard>
-          ) : message.name === 'startOnboardingProcess' ? (
-            <BotCard>
-              <Purchase props={JSON.parse(message.content)} />
-            </BotCard>
-          ) : message.name === 'showSalaryRanges' ? (
-            <BotCard>
-              <Events props={JSON.parse(message.content)} />
+              <Response props={JSON.parse(message.content)} />
             </BotCard>
           ) : null
         ) : message.role === 'user' ? (

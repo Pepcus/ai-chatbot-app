@@ -68,7 +68,7 @@ export default function LoginForm() {
                 minLength={6}
               />
             </div>
-
+            {/*
             <div className="mt-4">
             <label
               className="mb-3 mt-5 block text-xs font-medium text-zinc-400"
@@ -89,7 +89,7 @@ export default function LoginForm() {
                 <option value="D">D</option>
               </select>
             </div>
-          </div>
+            </div>*/}
           </div>
         </div>
         <LoginButton />
