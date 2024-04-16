@@ -12,7 +12,7 @@ import OpenAI from 'openai'
 import {
   BotCard,
   BotMessage
-} from '@/components/events'
+} from '@/components/utils'
 
 import { z } from 'zod'
 import { Response } from '@/components/responses/response'
@@ -22,7 +22,7 @@ import {
   nanoid, sleep
 } from '@/lib/utils'
 import { saveChat } from '@/app/actions'
-import { SpinnerMessage, UserMessage } from '@/components/events/message'
+import { SpinnerMessage, UserMessage } from '@/components/utils/message'
 import { Chat } from '@/lib/types'
 import { auth } from '@/auth'
 
@@ -92,9 +92,9 @@ async function submitUserMessage(content: string) {
         
         You and the user can discuss HR processes, policies, and best practices.
 
-        If the user asks any question related to HR domain, employee handbook, HR processes, call hackthon_function to display the relevant content.
+        If the user asks any question related to HR domain, employee handbook, HR processes, call \`get_details_from_employee_handbook\` function to display the relevant content.
 
-        If the user asks subsequent questions related to HR domain, employee handbook, HR processes, call 'hackthon_function' again and pass user's query as an argument to it. Do this until user changes the topic. Do not add anthing from your side.
+        If the user asks subsequent questions related to HR domain, employee handbook, HR processes, call \`get_details_from_employee_handbook\` function again and pass user's query as an argument to it. Do this until user changes the topic. Do not add anthing from your side.
 
         If you are not sure about any question, call 'get_details_from_employee_handbook' and pass user's query as an argument to it.
 
@@ -107,9 +107,9 @@ async function submitUserMessage(content: string) {
         
         You and the user can discuss HR processes, policies, and best practices.
 
-        If the user asks any question related to HR domain, employee handbook, HR processes, call hackthon_function to display the relevant content.
+        If the user asks any question related to HR domain, employee handbook, HR processes, call \`get_details_from_employee_handbook\` function to display the relevant content.
 
-        If the user asks subsequent questions related to HR domain, employee handbook, HR processes, call 'hackthon_function' again and pass user's query as an argument to it. Do this until user changes the topic. Do not add anthing from your side.
+        If the user asks subsequent questions related to HR domain, employee handbook, HR processes, call\`get_details_from_employee_handbook\` function again and pass user's query as an argument to it. Do this until user changes the topic. Do not add anthing from your side.
 
         If you are not sure about any question, call 'get_details_from_employee_handbook' and pass user's query as an argument to it.
 
@@ -169,7 +169,7 @@ async function submitUserMessage(content: string) {
               {
                 id: nanoid(),
                 role: 'function',
-                name: 'hackthonFunction',
+                name: 'getDetailsFromEmployeeHandbook',
                 content: resp.result
               }
             ]
