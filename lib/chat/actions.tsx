@@ -14,7 +14,7 @@ import {
   BotMessage
 } from '@/components/utils'
 
-import { z } from 'zod'
+import { string, z } from 'zod'
 import { Response } from '@/components/responses/response'
 import { ResponseSkeleton } from '@/components/responses/response-skeleton'
 
@@ -25,34 +25,18 @@ import { saveChat } from '@/app/actions'
 import { SpinnerMessage, UserMessage } from '@/components/utils/message'
 import { Chat } from '@/lib/types'
 import { auth } from '@/auth'
+import { getUser } from '@/app/login/actions'
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY || ''
 })
 
 
-
-async function getDetailsFromEmployeeHandbook(query: string) {
+async function getDetailsFromEmployeeHandbook(query:string, company:any, role:any) {
   'use server'
 
   const API_SERVER_URL = process.env.API_SERVER_URL
-  let companyId = null
-  const session = await auth()
-  if (session && session.user) {
-    console.log("===============email=============", session?.user?.email)
-    const email = session?.user?.email
-    
-    if (email == 'deepak.nigam@example.com') {
-      companyId = 999
-    } else {
-      companyId = 1265
-    }
-  } else {
-    companyId = 439
-  }
-  console.log("===============companyId=============", companyId)
-
-  const response = await fetch(`${API_SERVER_URL}/response?companyId=${companyId}&query=${query}`);
+  const response = await fetch(`${API_SERVER_URL}/response?companyId=999&query=${query}`);
   if (!response.ok) {
     throw new Error('Network response was not ok');
   }
@@ -64,6 +48,26 @@ async function submitUserMessage(content: string) {
   'use server'
 
   const aiState = getMutableAIState<typeof AI>()
+
+  const session = await auth()
+  let company = null;
+  let role = null;
+  let prompt:any = null;
+  if (session && session.user) {
+    console.log("===============email=============", session?.user?.email)
+    let email:any = session.user.email
+    const existingUser = await getUser(email)
+    console.log("===============company=============", existingUser?.company)
+    company = existingUser?.company
+    role = existingUser?.role
+    let promptName = role + "_PROMPT"
+    prompt = process.env[promptName]
+  } else {
+    prompt = process.env.GENERIC_PROMPT
+  }
+
+
+  console.log("===============prompt=============", prompt)
 
   aiState.update({
     ...aiState.get(),
@@ -87,33 +91,11 @@ async function submitUserMessage(content: string) {
     messages: [
       {
         role: 'system',
-        content: `\
-        You are an HR conversation bot and you can assist users with various HR-related tasks and inquiries.
-        
-        You and the user can discuss HR processes, policies, and best practices.
-
-        If the user asks any question related to HR domain, employee handbook, HR processes, call \`get_details_from_employee_handbook\` function to display the relevant content.
-
-        If the user asks subsequent questions related to HR domain, employee handbook, HR processes, call \`get_details_from_employee_handbook\` function again and pass user's query as an argument to it. Do this until user changes the topic. Do not add anthing from your side.
-
-        If you are not sure about any question, call 'get_details_from_employee_handbook' and pass user's query as an argument to it.
-
-        Additionally, you can engage in conversation with users and offer support as needed.`
+        content: prompt
       },
       {
         role: 'assistant',
-        content: `\
-        You are an HR conversation bot and you can assist users with various HR-related tasks and inquiries.
-        
-        You and the user can discuss HR processes, policies, and best practices.
-
-        If the user asks any question related to HR domain, employee handbook, HR processes, call \`get_details_from_employee_handbook\` function to display the relevant content.
-
-        If the user asks subsequent questions related to HR domain, employee handbook, HR processes, call\`get_details_from_employee_handbook\` function again and pass user's query as an argument to it. Do this until user changes the topic. Do not add anthing from your side.
-
-        If you are not sure about any question, call 'get_details_from_employee_handbook' and pass user's query as an argument to it.
-
-        Additionally, you can engage in conversation with users and offer support as needed.`
+        content: prompt
       },
       ...aiState.get().messages.map((message: any) => ({
         role: message.role,
@@ -160,7 +142,9 @@ async function submitUserMessage(content: string) {
             </BotCard>
           )
           console.log("==========query before call=======", userQuery)
-          const resp = await getDetailsFromEmployeeHandbook(userQuery.description)
+          console.log("==========user company=======", company)
+          console.log("==========user role=======", role)
+          const resp = await getDetailsFromEmployeeHandbook(userQuery.description, company, role)
           await sleep(1000)
           aiState.done({
             ...aiState.get(),

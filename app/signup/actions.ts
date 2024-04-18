@@ -10,7 +10,9 @@ import { AuthError } from 'next-auth'
 export async function createUser(
   email: string,
   hashedPassword: string,
-  salt: string
+  salt: string,
+  company: string,
+  role: string
 ) {
   const existingUser = await getUser(email)
 
@@ -24,7 +26,9 @@ export async function createUser(
       id: crypto.randomUUID(),
       email,
       password: hashedPassword,
-      salt
+      salt,
+      company,
+      role
     }
 
     await kv.hmset(`user:${email}`, user)
@@ -47,6 +51,8 @@ export async function signup(
 ): Promise<Result | undefined> {
   const email = formData.get('email') as string
   const password = formData.get('password') as string
+  const company = formData.get('company') as string
+  const role = formData.get('role') as string
 
   const parsedCredentials = z
     .object({
@@ -70,7 +76,7 @@ export async function signup(
     const hashedPassword = getStringFromBuffer(hashedPasswordBuffer)
 
     try {
-      const result = await createUser(email, hashedPassword, salt)
+      const result = await createUser(email, hashedPassword, salt, company, role)
 
       if (result.resultCode === ResultCode.UserCreated) {
         await signIn('credentials', {

@@ -9,6 +9,7 @@ import { ResultCode } from '@/lib/utils'
 
 export async function getUser(email: string) {
   const user = await kv.hgetall<User>(`user:${email}`)
+  console.log("============user in getUser function============", user)
   return user
 }
 

@@ -17,7 +17,7 @@ export type ServerActionResult<Result> = Promise<
     }
 >
 
-export interface Session {
+export interface Session extends User {
   user: {
     id: string
     email: string
@@ -34,4 +34,6 @@ export interface User extends Record<string, any> {
   email: string
   password: string
   salt: string
+  role: string
+  company: string
 }
