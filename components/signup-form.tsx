@@ -32,7 +32,26 @@ export default function SignupForm() {
       <div className="w-full flex-1 rounded-lg border bg-white px-6 pb-4 pt-8 shadow-md md:w-96 dark:bg-zinc-950">
         <h1 className="mb-3 text-2xl font-bold">Sign up for an account!</h1>
         <div className="w-full">
-          <div>
+          <div className="mt-4">
+            <label
+              className="mb-3 mt-5 block text-xs font-medium text-zinc-400"
+              htmlFor="name"
+            >
+              Name
+            </label>
+            <div className="relative">
+              <input
+                className="peer block w-full rounded-md border bg-zinc-50 px-2 py-[9px] text-sm outline-none placeholder:text-zinc-500 dark:border-zinc-800 dark:bg-zinc-950"
+                id="name"
+                type="text"
+                name="name"
+                placeholder="Enter Name"
+                required
+                minLength={3}
+              />
+            </div>
+          </div>
+          <div className="mt-4">
             <label
               className="mb-3 mt-5 block text-xs font-medium text-zinc-400"
               htmlFor="email"
@@ -45,7 +64,7 @@ export default function SignupForm() {
                 id="email"
                 type="email"
                 name="email"
-                placeholder="Enter your email address"
+                placeholder="Enter email address"
                 required
               />
             </div>
@@ -105,8 +124,8 @@ export default function SignupForm() {
               >
                 <option value="">Select Role</option>
                 <option value="HR_MANAGER">HR Manager</option>
-                <option value="ACCT_MANAGER">Account Manager</option>
-                <option value="PROC_MANAGER">Procurement Manager </option>
+                <option value="ACCOUNT_MANAGER">Account Manager</option>
+                <option value="PROCUREMENT_MANAGER">Procurement Manager </option>
               </select>
             </div>
           </div>

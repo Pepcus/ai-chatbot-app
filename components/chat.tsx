@@ -3,7 +3,7 @@
 import { cn } from '@/lib/utils'
 import { ChatList } from '@/components/chat-list'
 import { ChatPanel } from '@/components/chat-panel'
-import { EmptyScreen } from '@/components/empty-screen'
+import { WelcomeScreen } from '@/components/welcome-screen'
 import { useLocalStorage } from '@/lib/hooks/use-local-storage'
 import { useEffect, useState } from 'react'
 import { useUIState, useAIState } from 'ai/rsc'
@@ -29,6 +29,7 @@ export function Chat({ id, className, session, missingKeys }: ChatProps) {
 
   const [_, setNewChatId] = useLocalStorage('newChatId', id)
 
+  console.log("======session in Chat before useEffect=======", session)
   useEffect(() => {
     if (session?.user) {
       if (!path.includes('chat') && messages.length === 1) {
@@ -69,7 +70,7 @@ export function Chat({ id, className, session, missingKeys }: ChatProps) {
         {messages.length ? (
           <ChatList messages={messages} isShared={false} session={session} />
         ) : (
-          <EmptyScreen />
+          <WelcomeScreen session={session}/>
         )}
         <div className="h-px w-full" ref={visibilityRef} />
       </div>

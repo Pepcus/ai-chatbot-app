@@ -6,11 +6,13 @@ import { z } from 'zod'
 import { kv } from '@vercel/kv'
 import { getUser } from '../login/actions'
 import { AuthError } from 'next-auth'
+import conn from '../../lib/db';
 
 export async function createUser(
+  name: string,
   email: string,
   hashedPassword: string,
-  salt: string,
+  salt:string,
   company: string,
   role: string
 ) {
@@ -22,16 +24,16 @@ export async function createUser(
       resultCode: ResultCode.UserAlreadyExists
     }
   } else {
-    const user = {
-      id: crypto.randomUUID(),
-      email,
-      password: hashedPassword,
-      salt,
-      company,
-      role
+    //await kv.hmset(`user:${email}`, user)
+    try {
+      // Create user in the database
+      await conn.query(
+        'INSERT INTO users (name, email, password, salt, company, role) VALUES ($1, $2, $3, $4, $5, $6)',
+        [name, email, hashedPassword, salt, company, role]
+      );
+    } catch (error) {
+      console.error('Error creating user:', error);
     }
-
-    await kv.hmset(`user:${email}`, user)
 
     return {
       type: 'success',
@@ -49,6 +51,7 @@ export async function signup(
   _prevState: Result | undefined,
   formData: FormData
 ): Promise<Result | undefined> {
+  const name = formData.get('name') as string
   const email = formData.get('email') as string
   const password = formData.get('password') as string
   const company = formData.get('company') as string
@@ -76,7 +79,7 @@ export async function signup(
     const hashedPassword = getStringFromBuffer(hashedPasswordBuffer)
 
     try {
-      const result = await createUser(email, hashedPassword, salt, company, role)
+      const result = await createUser(name, email, hashedPassword, salt, company, role)
 
       if (result.resultCode === ResultCode.UserCreated) {
         await signIn('credentials', {

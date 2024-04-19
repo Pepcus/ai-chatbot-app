@@ -6,10 +6,19 @@ import { AuthError } from 'next-auth'
 import { z } from 'zod'
 import { kv } from '@vercel/kv'
 import { ResultCode } from '@/lib/utils'
+import conn from '../../lib/db';
+
 
 export async function getUser(email: string) {
-  const user = await kv.hgetall<User>(`user:${email}`)
-  console.log("============user in getUser function============", user)
+  //const user = await kv.hgetall<User>(`user:${email}`)
+  let user = null;
+  try {
+    const query = `SELECT * FROM users where email='${email}'`;
+    const result = await conn.query(query);
+    user = result.rows[0]
+  } catch (error) {
+    console.error('Error in fetching users.', error);
+  }
   return user
 }
 
