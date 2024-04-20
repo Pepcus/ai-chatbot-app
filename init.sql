@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS chat (
 );
 
 CREATE TABLE IF NOT EXISTS userrole_prompt (
-    id VARCHAR(50) PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     user_role VARCHAR(50),
     company VARCHAR(255) NOT NULL,
     prompt_type VARCHAR(255) NOT NULL,

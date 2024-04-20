@@ -122,8 +122,8 @@ export async function saveChat(chat: Chat) {
         await conn.query( `UPDATE chat SET messages = $1 WHERE id = $2 AND user_id = $3`, [chat.messages, chat.id, chat.userId]);
       } else {
         await conn.query(
-          `INSERT INTO chat (id, title, created_at, user_id, path, messages, share_path) VALUES ($1, $2, $3, $4, $5, $6, $7)`,
-          [chat.id, chat.title, chat.createdAt, chat.userId, chat.path, chat.messages, chat.sharePath]
+          `INSERT INTO chat (id, title, created_at, user_id, chat_path, messages, share_path) VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+          [chat.id, chat.title, chat.createdAt, chat.userId, chat.chat_path, chat.messages, chat.sharePath]
         );
       }
     } catch (error) {
