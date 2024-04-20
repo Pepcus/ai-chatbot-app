@@ -6,34 +6,32 @@ import { kv } from '@vercel/kv'
 
 import { auth } from '@/auth'
 import { type Chat } from '@/lib/types'
+import conn from '../lib/db';
 
 export async function getChats(userId?: string | null) {
   if (!userId) {
     return []
   }
 
+  let result = null;
   try {
-    const pipeline = kv.pipeline()
-    const chats: string[] = await kv.zrange(`user:chat:${userId}`, 0, -1, {
-      rev: true
-    })
-
-    for (const chat of chats) {
-      pipeline.hgetall(chat)
-    }
-
-    const results = await pipeline.exec()
-
-    return results as Chat[]
+    result = await conn.query(`SELECT * FROM chat where user_id=$1`, [userId]);
   } catch (error) {
-    return []
+    console.error('Error in fetching chats.', error);
   }
+  return result.rows as Chat[]
 }
 
-export async function getChat(id: string, userId: string) {
-  const chat = await kv.hgetall<Chat>(`chat:${id}`)
+export async function getChat(id: string, userId: any) {
+  let chat = null;
+  try {
+    const result = await conn.query(`SELECT * FROM chat where id=$1 and user_id=$2`, [id, userId]);
+    chat = result.rows[0]
+  } catch (error) {
+    console.error('Error in fetching chats.', error);
+  }
 
-  if (!chat || (userId && chat.userId !== userId)) {
+  if (!chat || (userId && chat.user_id !== userId)) {
     return null
   }
 
@@ -48,18 +46,12 @@ export async function removeChat({ id, path }: { id: string; path: string }) {
       error: 'Unauthorized'
     }
   }
-
-  //Convert uid to string for consistent comparison with session.user.id
-  const uid = String(await kv.hget(`chat:${id}`, 'userId'))
-
-  if (uid !== session?.user?.id) {
-    return {
-      error: 'Unauthorized'
-    }
+  
+  try {
+    const result = await conn.query(`Delete FROM chat where id=$1 and user_id=$2`, [id, session.user?.id]);
+  } catch (error) {
+    console.error('Error in fetching chats.', error);
   }
-
-  await kv.del(`chat:${id}`)
-  await kv.zrem(`user:chat:${session.user.id}`, `chat:${id}`)
 
   revalidatePath('/')
   return revalidatePath(path)
@@ -74,19 +66,12 @@ export async function clearChats() {
     }
   }
 
-  const chats: string[] = await kv.zrange(`user:chat:${session.user.id}`, 0, -1)
-  if (!chats.length) {
-    return redirect('/')
+  try {
+    const result = await conn.query(`Delete FROM chat where user_id=$1`, [session.user?.id]);
+  } catch (error) {
+    console.error('Error in fetching chats.', error);
   }
-  const pipeline = kv.pipeline()
-
-  for (const chat of chats) {
-    pipeline.del(chat)
-    pipeline.zrem(`user:chat:${session.user.id}`, chat)
-  }
-
-  await pipeline.exec()
-
+  
   revalidatePath('/')
   return redirect('/')
 }
@@ -130,17 +115,20 @@ export async function shareChat(id: string) {
 
 export async function saveChat(chat: Chat) {
   const session = await auth()
-
   if (session && session.user) {
-    const pipeline = kv.pipeline()
-    pipeline.hmset(`chat:${chat.id}`, chat)
-    pipeline.zadd(`user:chat:${chat.userId}`, {
-      score: Date.now(),
-      member: `chat:${chat.id}`
-    })
-    await pipeline.exec()
-  } else {
-    return
+    try {
+      let existingChat = await getChat(chat.id, chat.userId)
+      if (existingChat != null) {
+        await conn.query( `UPDATE chat SET messages = $1 WHERE id = $2 AND user_id = $3`, [chat.messages, chat.id, chat.userId]);
+      } else {
+        await conn.query(
+          `INSERT INTO chat (id, title, created_at, user_id, path, messages, share_path) VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+          [chat.id, chat.title, chat.createdAt, chat.userId, chat.path, chat.messages, chat.sharePath]
+        );
+      }
+    } catch (error) {
+      console.error('Error in chat creation/updation:', error);
+    }
   }
 }
 

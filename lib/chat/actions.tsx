@@ -54,10 +54,8 @@ async function submitUserMessage(content: string) {
   let role = null;
   let prompt:any = null;
   if (session && session.user) {
-    console.log("===============email=============", session?.user?.email)
     let email:any = session.user.email
     const existingUser = await getUser(email)
-    console.log("===============company=============", existingUser?.company)
     company = existingUser?.company
     role = existingUser?.role
     let promptName = role + "_PROMPT"
@@ -65,8 +63,7 @@ async function submitUserMessage(content: string) {
   } else {
     prompt = process.env.GENERIC_PROMPT
   }
-
-
+  
   console.log("===============prompt=============", prompt)
 
   aiState.update({
@@ -141,9 +138,6 @@ async function submitUserMessage(content: string) {
               <ResponseSkeleton />
             </BotCard>
           )
-          console.log("==========query before call=======", userQuery)
-          console.log("==========user company=======", company)
-          console.log("==========user role=======", role)
           const resp = await getDetailsFromEmployeeHandbook(userQuery.description, company, role)
           await sleep(1000)
           aiState.done({
@@ -253,7 +247,7 @@ export const getUIStateFromAIState = (aiState: Chat) => {
         message.role === 'function' ? (
          message.name === 'getDetailsFromEmployeeHandbook' ? (
             <BotCard>
-              <Response props={JSON.parse(message.content)} />
+              <Response props={message.content} />
             </BotCard>
           ) : null
         ) : message.role === 'user' ? (

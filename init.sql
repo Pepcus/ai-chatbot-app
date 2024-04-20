@@ -1,4 +1,3 @@
--- Execute the CREATE TABLE query to create the 'users' table
 CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
@@ -9,16 +8,22 @@ CREATE TABLE IF NOT EXISTS users (
     company VARCHAR(100) NOT NULL
 );
 
--- Create chat table with foreign key reference to users table
 CREATE TABLE IF NOT EXISTS chat (
-    id SERIAL PRIMARY KEY,
+    id VARCHAR(50) PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     user_id INT NOT NULL,
-    path VARCHAR(255) NOT NULL,
+    chat_path VARCHAR(255) NOT NULL,
     messages JSONB[],
-    share_path VARCHAR(255)
+    share_path VARCHAR(255),
 
-    -- Define foreign key constraint
     CONSTRAINT fk_user_id FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS userrole_prompt (
+    id VARCHAR(50) PRIMARY KEY,
+    user_role VARCHAR(50),
+    company VARCHAR(255) NOT NULL,
+    prompt_type VARCHAR(255) NOT NULL,
+    content text NOT NULL
 );

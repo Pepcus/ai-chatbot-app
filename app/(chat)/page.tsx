@@ -12,7 +12,6 @@ export const metadata = {
 export default async function IndexPage() {
   const id = nanoid()
   const session:any = await auth()
-  console.log("========session in IndexPage============", session)
   const missingKeys = await getMissingKeys()
 
   return (
