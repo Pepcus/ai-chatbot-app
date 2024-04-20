@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS chat (
     title VARCHAR(255) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     user_id INT NOT NULL,
-    chat_path VARCHAR(255) NOT NULL,
+    path VARCHAR(255) NOT NULL,
     messages JSONB[],
     share_path VARCHAR(255),
 
