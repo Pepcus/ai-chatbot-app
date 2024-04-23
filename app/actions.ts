@@ -12,14 +12,13 @@ export async function getChats(userId?: string | null) {
   if (!userId) {
     return []
   }
-
-  let result = null;
   try {
-    result = await pool.query(`SELECT * FROM chat where user_id=$1`, [userId]);
+    let result = await pool.query(`SELECT * FROM chat where user_id=$1`, [userId]);
+    return result.rows as Chat[]
   } catch (error) {
     console.error('Error in fetching chats.', error);
   }
-  return result.rows as Chat[]
+  return []
 }
 
 export async function getChat(id: string, userId: any) {
