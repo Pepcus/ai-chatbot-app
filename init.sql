@@ -41,5 +41,5 @@ VALUES ('HR_MANAGER', 'A', 'MAIN_PROMPT', 'You are an HR conversation bot and yo
 
         Additionally, you can engage in conversation with users and offer support as needed.'),
 
-       ('HR_MANAGER', 'A', 'EXAMPLE_PROMPT', 'Can you explain companys health insurance plans and what they cover?'),
+       ('HR_MANAGER', 'A', 'EXAMPLE_PROMPT', 'Can you please explain companys health insurance plans and what they cover?'),
        ('HR_MANAGER', 'A', 'EXAMPLE_PROMPT', 'Tell me about parental leave policy.');
