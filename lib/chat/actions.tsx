@@ -41,7 +41,7 @@ async function getDetailsFromEmployeeHandbook(query:string, company:any, role:an
     throw new Error('Network response was not ok');
   }
   const resp = await response.json();
-  return resp
+  return resp.result
 }
 
 async function submitUserMessage(content: string) {
@@ -146,14 +146,14 @@ async function submitUserMessage(content: string) {
                 id: nanoid(),
                 role: 'function',
                 name: 'getDetailsFromEmployeeHandbook',
-                content: resp.result
+                content: resp
               }
             ]
           })
 
           return (
             <BotCard>
-              <Response props={{description:resp.result}}/>
+              <Response props={resp}/>
             </BotCard>
           )
         }
