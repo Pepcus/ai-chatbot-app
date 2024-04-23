@@ -43,8 +43,8 @@ export function ChatPanel({
     },
     {
       heading: `Tell me about`,
-      subheading: `maternity leave policy?`,
-      message: `Tell me about maternity leave policy?`
+      subheading: `parental leave policy.`,
+      message: `Tell me about parental leave policy.`
     }
   ]
 

@@ -36,7 +36,7 @@ async function getDetailsFromEmployeeHandbook(query:string, company:any, role:an
   'use server'
 
   const API_SERVER_URL = process.env.API_SERVER_URL
-  const response = await fetch(`${API_SERVER_URL}/response?companyId=999&query=${query}`);
+  const response = await fetch(`${API_SERVER_URL}/response?companyId=999lc&query=${query}`);
   if (!response.ok) {
     throw new Error('Network response was not ok');
   }
@@ -64,8 +64,6 @@ async function submitUserMessage(content: string) {
     prompt = process.env.GENERIC_PROMPT
   }
   
-  console.log("===============prompt=============", prompt)
-
   aiState.update({
     ...aiState.get(),
     messages: [

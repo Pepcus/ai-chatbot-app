@@ -29,7 +29,6 @@ export function Chat({ id, className, session, missingKeys }: ChatProps) {
 
   const [_, setNewChatId] = useLocalStorage('newChatId', id)
 
-  console.log("======session in Chat before useEffect=======", session)
   useEffect(() => {
     if (session?.user) {
       if (!path.includes('chat') && messages.length === 1) {
@@ -41,7 +40,7 @@ export function Chat({ id, className, session, missingKeys }: ChatProps) {
   useEffect(() => {
     const messagesLength = aiState.messages?.length
     if (messagesLength === 2) {
-      router.refresh()
+      //router.refresh()
     }
   }, [aiState.messages, router])
 

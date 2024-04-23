@@ -102,10 +102,9 @@ export default function SignupForm() {
                 className="peer block w-full rounded-md border bg-zinc-50 px-2 py-[9px] text-sm outline-none placeholder:text-zinc-500 dark:border-zinc-800 dark:bg-zinc-950"
               >
                 <option value="">Select Company</option>
-                <option value="A">A</option>
-                <option value="B">B</option>
-                <option value="C">C</option>
-                <option value="D">D</option>
+                <option value="ERC">Employers Resource</option>
+                <option value="REZ">Rezora</option>
+                <option value="TSS">Technical Safety Services</option>
               </select>
             </div>
           </div>
@@ -125,7 +124,7 @@ export default function SignupForm() {
                 <option value="">Select Role</option>
                 <option value="HR_MANAGER">HR Manager</option>
                 <option value="ACCOUNT_MANAGER">Account Manager</option>
-                <option value="PROCUREMENT_MANAGER">Procurement Manager </option>
+                <option value="RECRUITMENT_MANAGER">Recruitment Manager</option>
               </select>
             </div>
           </div>
