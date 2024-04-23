@@ -6,7 +6,7 @@ import { z } from 'zod'
 import { kv } from '@vercel/kv'
 import { getUser } from '../login/actions'
 import { AuthError } from 'next-auth'
-import conn from '../../lib/db';
+import pool from '../../lib/db';
 
 export async function createUser(
   name: string,
@@ -27,7 +27,7 @@ export async function createUser(
     //await kv.hmset(`user:${email}`, user)
     try {
       // Create user in the database
-      await conn.query(
+      await pool.query(
         'INSERT INTO users (name, email, password, salt, company, role) VALUES ($1, $2, $3, $4, $5, $6)',
         [name, email, hashedPassword, salt, company, role]
       );

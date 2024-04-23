@@ -6,7 +6,7 @@ import { AuthError } from 'next-auth'
 import { z } from 'zod'
 import { kv } from '@vercel/kv'
 import { ResultCode } from '@/lib/utils'
-import conn from '../../lib/db';
+import pool from '../../lib/db';
 
 
 export async function getUser(email: string) {
@@ -14,7 +14,7 @@ export async function getUser(email: string) {
   let user = null;
   try {
     const query = `SELECT * FROM users where email='${email}'`;
-    const result = await conn.query(query);
+    const result = await pool.query(query);
     user = result.rows[0]
   } catch (error) {
     console.error('Error in fetching users.', error);

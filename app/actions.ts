@@ -6,7 +6,7 @@ import { kv } from '@vercel/kv'
 
 import { auth } from '@/auth'
 import { type Chat } from '@/lib/types'
-import conn from '../lib/db';
+import pool from '../lib/db';
 
 export async function getChats(userId?: string | null) {
   if (!userId) {
@@ -15,7 +15,7 @@ export async function getChats(userId?: string | null) {
 
   let result = null;
   try {
-    result = await conn.query(`SELECT * FROM chat where user_id=$1`, [userId]);
+    result = await pool.query(`SELECT * FROM chat where user_id=$1`, [userId]);
   } catch (error) {
     console.error('Error in fetching chats.', error);
   }
@@ -25,7 +25,7 @@ export async function getChats(userId?: string | null) {
 export async function getChat(id: string, userId: any) {
   let chat = null;
   try {
-    const result = await conn.query(`SELECT * FROM chat where id=$1 and user_id=$2`, [id, userId]);
+    const result = await pool.query(`SELECT * FROM chat where id=$1 and user_id=$2`, [id, userId]);
     chat = result.rows[0]
   } catch (error) {
     console.error('Error in fetching chats.', error);
@@ -48,7 +48,7 @@ export async function removeChat({ id, path }: { id: string; path: string }) {
   }
   
   try {
-    const result = await conn.query(`Delete FROM chat where id=$1 and user_id=$2`, [id, session.user?.id]);
+    const result = await pool.query(`Delete FROM chat where id=$1 and user_id=$2`, [id, session.user?.id]);
   } catch (error) {
     console.error('Error in fetching chats.', error);
   }
@@ -67,7 +67,7 @@ export async function clearChats() {
   }
 
   try {
-    const result = await conn.query(`Delete FROM chat where user_id=$1`, [session.user?.id]);
+    const result = await pool.query(`Delete FROM chat where user_id=$1`, [session.user?.id]);
   } catch (error) {
     console.error('Error in fetching chats.', error);
   }
@@ -119,9 +119,9 @@ export async function saveChat(chat: Chat) {
     try {
       let existingChat = await getChat(chat.id, chat.userId)
       if (existingChat != null) {
-        await conn.query( `UPDATE chat SET messages = $1 WHERE id = $2 AND user_id = $3`, [chat.messages, chat.id, chat.userId]);
+        await pool.query( `UPDATE chat SET messages = $1 WHERE id = $2 AND user_id = $3`, [chat.messages, chat.id, chat.userId]);
       } else {
-        await conn.query(
+        await pool.query(
           `INSERT INTO chat (id, title, created_at, user_id, path, messages, share_path) VALUES ($1, $2, $3, $4, $5, $6, $7)`,
           [chat.id, chat.title, chat.createdAt, chat.userId, chat.path, chat.messages, chat.sharePath]
         );
