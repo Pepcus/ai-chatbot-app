@@ -50,8 +50,8 @@ async function submitUserMessage(content: string) {
   const aiState = getMutableAIState<typeof AI>()
 
   const session = await auth()
-  let company = null;
-  let role = null;
+  let company:any = null;
+  let role:any = null;
   let prompt:any = null;
   if (session && session.user) {
     let email:any = session.user.email
