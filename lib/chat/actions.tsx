@@ -181,7 +181,7 @@ export type AIState = {
 
 export type UIState = {
   id: string
-  display: React.ReactNode
+  display: React.ReactNode 
 }[]
 
 export const AI = createAI<AIState, UIState>({
