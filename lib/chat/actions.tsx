@@ -32,16 +32,16 @@ const openai = new OpenAI({
 })
 
 
-async function getDetailsFromEmployeeHandbook(query:string, company:any, role:any) {
+async function getDetailsFromCustomDataSource(query:string, company:any, role:any) {
   'use server'
 
   const API_SERVER_URL = process.env.API_SERVER_URL
-  const response = await fetch(`${API_SERVER_URL}/response?company=999lc&query=${query}`);
+  const response = await fetch(`${API_SERVER_URL}/response?company=${company}&query=${query}&role=${role}`);
   if (!response.ok) {
     throw new Error('Network response was not ok');
   }
   const resp = await response.json();
-  return resp.result
+  return resp
 }
 
 async function submitUserMessage(content: string) {
@@ -124,7 +124,7 @@ async function submitUserMessage(content: string) {
       return textNode
     },
     functions: {
-      getDetailsFromEmployeeHandbook: {
+      getDetailsFromCustomDataSource: {
         parameters: z.object({
           userQuery: z.object({
             description: z.string()
@@ -136,7 +136,7 @@ async function submitUserMessage(content: string) {
               <ResponseSkeleton />
             </BotCard>
           )
-          const resp = await getDetailsFromEmployeeHandbook(userQuery.description, company, role)
+          const resp = await getDetailsFromCustomDataSource(userQuery.description, company, role)
           await sleep(1000)
           aiState.done({
             ...aiState.get(),
@@ -145,7 +145,7 @@ async function submitUserMessage(content: string) {
               {
                 id: nanoid(),
                 role: 'function',
-                name: 'getDetailsFromEmployeeHandbook',
+                name: 'getDetailsFromCustomDataSource',
                 content: resp
               }
             ]
@@ -187,7 +187,7 @@ export type UIState = {
 export const AI = createAI<AIState, UIState>({
   actions: {
     submitUserMessage,
-    getDetailsFromEmployeeHandbook
+    getDetailsFromCustomDataSource
   },
   initialUIState: [],
   initialAIState: { chatId: nanoid(), messages: [] },
@@ -243,7 +243,7 @@ export const getUIStateFromAIState = (aiState: Chat) => {
       id: `${aiState.chatId}-${index}`,
       display:
         message.role === 'function' ? (
-         message.name === 'getDetailsFromEmployeeHandbook' ? (
+         message.name === 'getDetailsFromCustomDataSource' ? (
             <BotCard>
               <Response props={message.content} />
             </BotCard>

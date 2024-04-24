@@ -24,7 +24,6 @@ export async function createUser(
       resultCode: ResultCode.UserAlreadyExists
     }
   } else {
-    //await kv.hmset(`user:${email}`, user)
     try {
       // Create user in the database
       await pool.query(
