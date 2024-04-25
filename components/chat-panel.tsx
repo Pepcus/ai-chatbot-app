@@ -29,8 +29,16 @@ export function ChatPanel({
   const [aiState] = useAIState()
   const [messages, setMessages] = useUIState<typeof AI>()
   const { submitUserMessage } = useActions()
-  const [shareDialogOpen, setShareDialogOpen] = React.useState(false)
 
+  const userString:any = localStorage.getItem('user')
+  let role:any = null
+  let company:any = null
+  if (userString != null) {
+    const user = JSON.parse(userString)
+    role = user.role
+    company = user.company
+  }
+  
   const exampleMessages = [
     {
       heading: `Can you explain`,
@@ -71,7 +79,7 @@ export function ChatPanel({
                   ])
 
                   const responseMessage = await submitUserMessage(
-                    example.message
+                    example.message, company, role
                   )
 
                   setMessages(currentMessages => [

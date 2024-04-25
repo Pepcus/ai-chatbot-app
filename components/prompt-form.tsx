@@ -31,6 +31,15 @@ export function PromptForm({
   const { submitUserMessage } = useActions()
   const [_, setMessages] = useUIState<typeof AI>()
 
+  const userString:any = localStorage.getItem('user')
+  let role:any = null
+  let company:any = null
+  if (userString != null) {
+    const user = JSON.parse(userString)
+    role = user.role
+    company = user.company
+  }
+
   React.useEffect(() => {
     if (inputRef.current) {
       inputRef.current.focus()
@@ -62,7 +71,7 @@ export function PromptForm({
         ])
 
         // Submit and get response message
-        const responseMessage = await submitUserMessage(value)
+        const responseMessage = await submitUserMessage(value, company, role)
         setMessages(currentMessages => [...currentMessages, responseMessage])
       }}
     >

@@ -44,22 +44,14 @@ async function getDetailsFromCustomDataSource(query:string, company:any, role:an
   return resp
 }
 
-async function submitUserMessage(content: string) {
+async function submitUserMessage(content: string, company: string, role: string) {
   'use server'
 
   const aiState = getMutableAIState<typeof AI>()
-
-  const session = await auth()
-  let company:any = null;
-  let role:any = null;
+  console.log("========role in submit user message=========", role)
   let prompt:any = null;
-  if (session && session.user) {
-    let email:any = session.user.email
-    const existingUser = await getUser(email)
-    company = existingUser?.company
-    role = existingUser?.role
-    let promptName = role + "_PROMPT"
-    prompt = process.env[promptName]
+  if (role != null) {
+    prompt = role + '_PROMPT'
   } else {
     prompt = process.env.GENERIC_PROMPT
   }

@@ -22,6 +22,7 @@ export async function getUser(email: string) {
 interface Result {
   type: string
   resultCode: ResultCode
+  user: any
 }
 
 export async function authenticate(
@@ -48,15 +49,18 @@ export async function authenticate(
         password,
         redirect: false
       })
+      const { role, company } = await getUser(parsedCredentials.data.email);
 
       return {
         type: 'success',
-        resultCode: ResultCode.UserLoggedIn
+        resultCode: ResultCode.UserLoggedIn,
+        user: {role, company}
       }
     } else {
       return {
         type: 'error',
-        resultCode: ResultCode.InvalidCredentials
+        resultCode: ResultCode.InvalidCredentials,
+        user: null
       }
     }
   } catch (error) {
@@ -65,12 +69,14 @@ export async function authenticate(
         case 'CredentialsSignin':
           return {
             type: 'error',
-            resultCode: ResultCode.InvalidCredentials
+            resultCode: ResultCode.InvalidCredentials,
+            user: null
           }
         default:
           return {
             type: 'error',
-            resultCode: ResultCode.UnknownError
+            resultCode: ResultCode.UnknownError,
+            user: null
           }
       }
     }
