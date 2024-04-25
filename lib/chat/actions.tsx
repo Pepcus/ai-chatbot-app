@@ -34,7 +34,7 @@ const openai = new OpenAI({
 
 async function getDetailsFromCustomDataSource(query:string, company:any, role:any) {
   'use server'
-
+  console.log("========custom data source fucntion called=========")
   const API_SERVER_URL = process.env.API_SERVER_URL
   const response = await fetch(`${API_SERVER_URL}/response?company=${company}&query=${query}&role=${role}`);
   if (!response.ok) {
@@ -51,7 +51,8 @@ async function submitUserMessage(content: string, company: string, role: string)
   console.log("========role in submit user message=========", role)
   let prompt:any = null;
   if (role != null) {
-    prompt = role + '_PROMPT'
+    let promptName = role + "_PROMPT"
+    prompt = process.env[promptName]
   } else {
     prompt = process.env.GENERIC_PROMPT
   }
