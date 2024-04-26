@@ -20,26 +20,138 @@ CREATE TABLE IF NOT EXISTS chat (
     CONSTRAINT fk_user_id FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS userrole_prompt (
-    id SERIAL PRIMARY KEY,
-    user_role VARCHAR(50),
-    company VARCHAR(255) NOT NULL,
-    prompt_type VARCHAR(255) NOT NULL,
-    content text NOT NULL
+-- Create Departments table
+CREATE TABLE departments (
+    department_id SERIAL PRIMARY KEY,
+    department_name VARCHAR(255) NOT NULL
 );
 
-INSERT INTO userrole_prompt (user_role, company, prompt_type, content)
-VALUES ('HR_MANAGER', 'A', 'MAIN_PROMPT', 'You are an HR conversation bot and you can assist users with various HR-related tasks and inquiries.
-        
-        You and the user can discuss HR processes, policies, and best practices.
+-- Create Employees table
+CREATE TABLE employees (
+    employee_id SERIAL PRIMARY KEY,
+    first_name VARCHAR(100),
+    last_name VARCHAR(100),
+    department_id INT,
+    designation VARCHAR(255),
+    FOREIGN KEY (department_id) REFERENCES departments(department_id)
+);
 
-        If the user asks any question related to HR domain, employee handbook, HR processes, call \`get_details_from_employee_handbook\` function to display the relevant content.
+-- Create Employee Contacts table
+CREATE TABLE employee_contacts (
+    employee_id INT PRIMARY KEY,
+    phone_number VARCHAR(15),
+    address TEXT,
+    email VARCHAR(255),
+    FOREIGN KEY (employee_id) REFERENCES employees(employee_id)
+);
 
-        If the user asks subsequent questions related to HR domain, employee handbook, HR processes, call \`get_details_from_employee_handbook\` function again and pass users query as an argument to it. Do this until user changes the topic. Do not add anthing from your side.
+-- Create Salaries table
+CREATE TABLE salaries (
+    employee_id INT,
+    salary DECIMAL(10, 2),
+    from_date DATE,
+    to_date DATE,
+    FOREIGN KEY (employee_id) REFERENCES employees(employee_id)
+);
 
-        If you are not sure about any question, call `get_details_from_employee_handbook` and pass users query as an argument to it.
+-- Create Leave Management table
+CREATE TABLE leave_management (
+    leave_id SERIAL PRIMARY KEY,
+    employee_id INT,
+    leave_type VARCHAR(100),
+    start_date DATE,
+    end_date DATE,
+    status VARCHAR(50),
+    FOREIGN KEY (employee_id) REFERENCES employees(employee_id)
+);
 
-        Additionally, you can engage in conversation with users and offer support as needed.'),
+-- Insert data into Departments
+INSERT INTO departments (department_name) VALUES 
+('Human Resources'), ('Engineering'), ('Marketing');
 
-       ('HR_MANAGER', 'A', 'EXAMPLE_PROMPT', 'Can you please explain companys health insurance plans and what they cover?'),
-       ('HR_MANAGER', 'A', 'EXAMPLE_PROMPT', 'Tell me about parental leave policy.');
+-- Insert 50 distinct Employees
+INSERT INTO employees (first_name, last_name, department_id, designation) VALUES
+('John', 'Smith', 1, 'Associate Software Engineer'),
+('Jane', 'Doe', 2, 'Software Engineer'),
+('Emily', 'Jones', 1, 'Senior Software Engineer'),
+('Michael', 'Brown', 3, 'Lead Engineer'),
+('Jessica', 'Davis', 1, 'Project Manager'),
+('Matthew', 'Miller', 2, 'Solution Architect'),
+('Ashley', 'Wilson', 1, 'Associate Software Engineer'),
+('Joshua', 'Moore', 3, 'Software Engineer'),
+('Sophia', 'Taylor', 2, 'Senior Software Engineer'),
+('Daniel', 'Anderson', 1, 'Lead Engineer'),
+-- Continue with more unique names...
+('Olivia', 'Martin', 2, 'Project Manager'),
+('Lucas', 'Garcia', 3, 'Solution Architect'),
+('Mia', 'Hernandez', 1, 'Software Engineer'),
+('Jack', 'Martinez', 2, 'Senior Software Engineer'),
+('Amelia', 'Lopez', 1, 'Associate Software Engineer'),
+('Ethan', 'Wilson', 3, 'Lead Engineer'),
+('Isabella', 'Gonzalez', 2, 'Software Engineer'),
+('Ryan', 'Wright', 3, 'Project Manager'),
+('Zoe', 'Lopez', 1, 'Senior Software Engineer'),
+('Benjamin', 'Clark', 2, 'Associate Software Engineer'),
+-- Ensure all names are distinct...
+('Liam', 'Harris', 3, 'Software Engineer'),
+('Grace', 'Lewis', 1, 'Project Manager'),
+('James', 'Robinson', 2, 'Solution Architect'),
+('Ava', 'Walker', 3, 'Lead Engineer'),
+('Logan', 'Perez', 1, 'Associate Software Engineer'),
+('Mason', 'Hall', 2, 'Software Engineer'),
+('Ella', 'Young', 3, 'Senior Software Engineer'),
+('Carter', 'Allen', 1, 'Project Manager'),
+('Kayla', 'Sanchez', 2, 'Solution Architect'),
+('Noah', 'Wright', 3, 'Lead Engineer'),
+('Chloe', 'King', 1, 'Associate Software Engineer'),
+('Jacob', 'Lee', 2, 'Software Engineer'),
+('Lily', 'Scott', 3, 'Senior Software Engineer'),
+('William', 'Green', 1, 'Project Manager'),
+('Emma', 'Adams', 2, 'Solution Architect'),
+('Owen', 'Baker', 3, 'Lead Engineer'),
+('Sofia', 'Gonzalez', 1, 'Software Engineer'),
+('Luke', 'Nelson', 2, 'Senior Software Engineer'),
+('Avery', 'Carter', 3, 'Associate Software Engineer'),
+('Gabriel', 'Mitchell', 1, 'Software Engineer'),
+('Madison', 'Perez', 2, 'Project Manager'),
+('Henry', 'Roberts', 3, 'Solution Architect'),
+('Mila', 'Campbell', 1, 'Lead Engineer'),
+('Tyler', 'Parker', 2, 'Associate Software Engineer'),
+('Scarlett', 'Evans', 3, 'Software Engineer'),
+('Julian', 'Edwards', 1, 'Senior Software Engineer'),
+('Anna', 'Collins', 2, 'Project Manager'),
+('Eli', 'Stewart', 3, 'Solution Architect'),
+('Zoey', 'Sanchez', 1, 'Lead Engineer'),
+('Nathan', 'Morris', 2, 'Associate Software Engineer');
+
+-- Insert Contacts for all 50 Employees
+INSERT INTO employee_contacts (employee_id, phone_number, address, email) 
+SELECT employee_id, 
+    '555-' || LPAD(employee_id::TEXT, 4, '0'), 
+    '123 Main St #' || employee_id || ', Anytown, USA', 
+    LOWER(first_name || '.' || last_name || '@example.com')
+FROM employees;
+
+-- Insert Salary data for 50 Employees
+INSERT INTO salaries (employee_id, salary, from_date, to_date) 
+SELECT employee_id, 50000 + (employee_id * 500), '2023-01-01', '2023-12-31'
+FROM employees;
+
+-- Insert Leave Management data for 50 Employees with diverse leave types and statuses
+INSERT INTO leave_management (employee_id, leave_type, start_date, end_date, status)
+SELECT employee_id, 
+       CASE MOD(employee_id, 5)
+           WHEN 0 THEN 'Vacation'
+           WHEN 1 THEN 'Sick'
+           WHEN 2 THEN 'Personal'
+           WHEN 3 THEN 'Maternity'
+           WHEN 4 THEN 'Paternity'
+       END AS leave_type,
+       TO_DATE('2023-01-' || LPAD((employee_id % 28 + 1)::text, 2, '0'), 'YYYY-MM-DD') AS start_date,
+       TO_DATE('2023-01-' || LPAD(LEAST(employee_id % 28 + 3 + employee_id % 5, 31)::text, 2, '0'), 'YYYY-MM-DD') AS end_date,
+       CASE MOD(employee_id, 3)
+           WHEN 0 THEN 'Approved'
+           WHEN 1 THEN 'Pending'
+           WHEN 2 THEN 'Denied'
+       END AS status
+FROM employees;
