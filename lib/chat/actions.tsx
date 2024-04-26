@@ -95,17 +95,6 @@ async function submitUserMessage(content: string, company: string, role: string)
 
       if (done) {
         textStream.done()
-        aiState.done({
-          ...aiState.get(),
-          messages: [
-            ...aiState.get().messages,
-            {
-              id: nanoid(),
-              role: 'system',
-              content: content
-            }
-          ]
-        })
       } else {
         textStream.update(delta)
       }
