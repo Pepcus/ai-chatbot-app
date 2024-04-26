@@ -106,7 +106,7 @@ async function submitUserMessage(content: string, company: string, role: string)
             {
               id: nanoid(),
               role: 'assistant',
-              content: content
+              content: prompt
             }
           ]
         })
