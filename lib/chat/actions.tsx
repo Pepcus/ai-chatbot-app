@@ -126,6 +126,7 @@ async function submitUserMessage(content: string, company: string, role: string)
             </BotCard>
           )
           const resp = await getDetailsFromCustomDataSource(userQuery.description, company, role)
+          await sleep(2000)
           aiState.done({
             ...aiState.get(),
             messages: [
