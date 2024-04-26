@@ -101,7 +101,7 @@ async function submitUserMessage(content: string, company: string, role: string)
             ...aiState.get().messages,
             {
               id: nanoid(),
-              role: 'assistant',
+              role: 'system',
               content: content
             }
           ]
