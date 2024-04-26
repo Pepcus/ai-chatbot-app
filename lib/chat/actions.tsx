@@ -120,11 +120,6 @@ async function submitUserMessage(content: string, company: string, role: string)
           })
         }),
         render: async function* ({userQuery}) {
-          yield (
-            <BotCard>
-              <ResponseSkeleton />
-            </BotCard>
-          )
           const resp = await getDetailsFromCustomDataSource(userQuery.description, company, role)
           await sleep(1000)
           aiState.done({
