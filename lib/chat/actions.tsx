@@ -95,6 +95,17 @@ async function submitUserMessage(content: string, company: string, role: string)
 
       if (done) {
         textStream.done()
+        aiState.done({
+          ...aiState.get(),
+          messages: [
+            ...aiState.get().messages,
+            {
+              id: nanoid(),
+              role: 'system',
+              content: content
+            }
+          ]
+        })
       } else {
         textStream.update(delta)
       }
@@ -115,7 +126,6 @@ async function submitUserMessage(content: string, company: string, role: string)
             </BotCard>
           )
           const resp = await getDetailsFromCustomDataSource(userQuery.description, company, role)
-          await sleep(1000)
           aiState.done({
             ...aiState.get(),
             messages: [
