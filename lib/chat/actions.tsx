@@ -81,6 +81,10 @@ async function submitUserMessage(content: string, company: string, role: string)
         role: 'system',
         content: prompt
       },
+      {
+        role: 'assistant',
+        content: prompt
+      },
       ...aiState.get().messages.map((message: any) => ({
         role: message.role,
         content: message.content,
