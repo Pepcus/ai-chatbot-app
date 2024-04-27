@@ -4,7 +4,6 @@ CREATE TABLE IF NOT EXISTS users (
     email VARCHAR(100) UNIQUE NOT NULL,
     password VARCHAR(100) NOT NULL,
     salt VARCHAR(100) NOT NULL,
-    role VARCHAR(50) NOT NULL,
     company VARCHAR(100) NOT NULL
 );
 

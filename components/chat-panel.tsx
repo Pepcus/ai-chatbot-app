@@ -1,6 +1,5 @@
 import * as React from 'react'
 
-import { Button } from '@/components/ui/button'
 import { PromptForm } from '@/components/prompt-form'
 import { ButtonScrollToBottom } from '@/components/button-scroll-to-bottom'
 import { FooterText } from '@/components/footer'
@@ -26,17 +25,13 @@ export function ChatPanel({
   isAtBottom,
   scrollToBottom
 }: ChatPanelProps) {
-  const [aiState] = useAIState()
   const [messages, setMessages] = useUIState<typeof AI>()
-  const { submitUserMessage } = useActions()
+  const { getDetailsFromCustomDataSource } = useActions()
 
   const userString:any = localStorage.getItem('user')
-  let role:any = null
   let company:any = null
   if (userString != null) {
-    const user = JSON.parse(userString)
-    role = user.role
-    company = user.company
+    company = JSON.parse(userString).company
   }
   
   const exampleMessages = [
@@ -78,8 +73,8 @@ export function ChatPanel({
                     }
                   ])
 
-                  const responseMessage = await submitUserMessage(
-                    example.message, company, role
+                  const responseMessage = await getDetailsFromCustomDataSource(
+                    example.message, company
                   )
 
                   setMessages(currentMessages => [

@@ -49,12 +49,12 @@ export async function authenticate(
         password,
         redirect: false
       })
-      const { role, company } = await getUser(parsedCredentials.data.email);
+      const { company } = await getUser(parsedCredentials.data.email);
 
       return {
         type: 'success',
         resultCode: ResultCode.UserLoggedIn,
-        user: {role, company}
+        user: {email, company}
       }
     } else {
       return {

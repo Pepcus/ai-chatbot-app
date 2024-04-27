@@ -28,16 +28,13 @@ export function PromptForm({
   const router = useRouter()
   const { formRef, onKeyDown } = useEnterSubmit()
   const inputRef = React.useRef<HTMLTextAreaElement>(null)
-  const { submitUserMessage } = useActions()
+  const { getDetailsFromCustomDataSource } = useActions()
   const [_, setMessages] = useUIState<typeof AI>()
 
   const userString:any = localStorage.getItem('user')
-  let role:any = null
   let company:any = null
   if (userString != null) {
-    const user = JSON.parse(userString)
-    role = user.role
-    company = user.company
+    company = JSON.parse(userString).company
   }
 
   React.useEffect(() => {
@@ -71,7 +68,7 @@ export function PromptForm({
         ])
 
         // Submit and get response message
-        const responseMessage = await submitUserMessage(value, company, role)
+        const responseMessage = await getDetailsFromCustomDataSource(value, company)
         setMessages(currentMessages => [...currentMessages, responseMessage])
       }}
     >

@@ -31,24 +31,29 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY || ''
 })
 
-
-async function getDetailsFromCustomDataSource(query:string, company:any, role:any) {
+async function getDetailsFromCustomDataSource(query:string, company:any) {
   'use server'
+  
   console.log("========custom data source fucntion called=========")
   const API_SERVER_URL = process.env.API_SERVER_URL
-  const response = await fetch(`${API_SERVER_URL}/response?company=${company}&query=${query}&role=${role}`);
+  const response = await fetch(`${API_SERVER_URL}/response?company=${company}&query=${query}`);
   if (!response.ok) {
     throw new Error('Network response was not ok');
   }
   const resp = await response.json();
-  return resp
+  return {
+    id: nanoid(),
+    display:
+       <BotCard>
+         <Response props={resp}/>
+       </BotCard>
+  }
 }
 
 async function submitUserMessage(content: string, company: string, role: string) {
   'use server'
 
   const aiState = getMutableAIState<typeof AI>()
-  console.log("========role in submit user message=========", role)
   let prompt:any = null;
   if (role != null) {
     let promptName = role + "_PROMPT"
@@ -81,10 +86,6 @@ async function submitUserMessage(content: string, company: string, role: string)
         role: 'system',
         content: prompt
       },
-      {
-        role: 'assistant',
-        content: prompt
-      },
       ...aiState.get().messages.map((message: any) => ({
         role: message.role,
         content: message.content,
@@ -96,7 +97,6 @@ async function submitUserMessage(content: string, company: string, role: string)
         textStream = createStreamableValue('')
         textNode = <BotMessage content={textStream.value} />
       }
-
       if (done) {
         textStream.done()
         aiState.done({

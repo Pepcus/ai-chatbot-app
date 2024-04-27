@@ -36,6 +36,5 @@ export interface User extends Record<string, any> {
   email: string
   password: string
   salt: string
-  role: string
   company: string
 }
