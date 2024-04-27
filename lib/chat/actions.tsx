@@ -37,10 +37,14 @@ async function getDetailsFromCustomDataSource(query:string, company:any) {
   console.log("========custom data source fucntion called=========")
   const API_SERVER_URL = process.env.API_SERVER_URL
   const response = await fetch(`${API_SERVER_URL}/response?company=${company}&query=${query}`);
+  console.log("========response from server =========", response)
+
   if (!response.ok) {
     throw new Error('Network response was not ok');
   }
   const resp = await response.json();
+  console.log("========resp =========", resp)
+
   return {
     id: nanoid(),
     display:
