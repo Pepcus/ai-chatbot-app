@@ -50,116 +50,6 @@ async function getDetailsFromCustomDataSource(query:string, company:any) {
   }
 }
 
-async function submitUserMessage(content: string, company: string, role: string) {
-  'use server'
-
-  const aiState = getMutableAIState<typeof AI>()
-  let prompt:any = null;
-  if (role != null) {
-    let promptName = role + "_PROMPT"
-    prompt = process.env[promptName]
-  } else {
-    prompt = process.env.GENERIC_PROMPT
-  }
-  
-  aiState.update({
-    ...aiState.get(),
-    messages: [
-      ...aiState.get().messages,
-      {
-        id: nanoid(),
-        role: 'user',
-        content
-      }
-    ]
-  })
-
-  let textStream: undefined | ReturnType<typeof createStreamableValue<string>>
-  let textNode: undefined | React.ReactNode
-  
-  const ui = render({
-    model: 'gpt-3.5-turbo',
-    provider: openai,
-    initial: <SpinnerMessage />,
-    messages: [
-      {
-        role: 'system',
-        content: prompt
-      },
-      ...aiState.get().messages.map((message: any) => ({
-        role: message.role,
-        content: message.content,
-        name: message.name
-      }))
-    ],
-    text: ({ content, done, delta }) => {
-      if (!textStream) {
-        textStream = createStreamableValue('')
-        textNode = <BotMessage content={textStream.value} />
-      }
-      if (done) {
-        textStream.done()
-        aiState.done({
-          ...aiState.get(),
-          messages: [
-            ...aiState.get().messages,
-            {
-              id: nanoid(),
-              role: 'assistant',
-              content: content
-            }
-          ]
-        })
-      } else {
-        textStream.update(delta)
-      }
-
-      return textNode
-    },
-    functions: {
-      getDetailsFromCustomDataSource: {
-        parameters: z.object({
-          userQuery: z.object({
-            description: z.string()
-          })
-        }),
-        render: async function* ({userQuery}) {
-          yield (
-            <BotCard>
-              <ResponseSkeleton />
-            </BotCard>
-          )
-          const resp = await getDetailsFromCustomDataSource(userQuery.description, company, role)
-          await sleep(2000)
-          aiState.done({
-            ...aiState.get(),
-            messages: [
-              ...aiState.get().messages,
-              {
-                id: nanoid(),
-                role: 'function',
-                name: 'getDetailsFromCustomDataSource',
-                content: resp
-              }
-            ]
-          })
-
-          return (
-            <BotCard>
-              <Response props={resp}/>
-            </BotCard>
-          )
-        }
-      }
-    }
-  })
-
-  return {
-    id: nanoid(),
-    display: ui
-  }
-}
-
 export type Message = {
   role: 'user' | 'assistant' | 'system' | 'function' | 'data' | 'tool'
   content: string
@@ -179,7 +69,6 @@ export type UIState = {
 
 export const AI = createAI<AIState, UIState>({
   actions: {
-    submitUserMessage,
     getDetailsFromCustomDataSource
   },
   initialUIState: [],
