@@ -74,7 +74,7 @@ export function ChatPanel({
                   ])
 
                   const responseMessage = await getDetailsFromCustomDataSource(
-                    example.message, company
+                    example.message, company, null
                   )
 
                   setMessages(currentMessages => [

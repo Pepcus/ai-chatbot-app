@@ -1,6 +1,7 @@
 'use client'
 
 import * as React from 'react'
+import { useState, ChangeEvent, FormEvent} from 'react';
 import Textarea from 'react-textarea-autosize'
 
 import { useActions, useUIState } from 'ai/rsc'
@@ -26,6 +27,16 @@ export function PromptForm({
   setInput: (value: string) => void
 }) {
   const router = useRouter()
+  
+  const [file, setFile] = useState<any | null>(null);
+
+  const handleFileUpload = (event: ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = event.target.files?.[0];
+    if (selectedFile) {
+      setFile(selectedFile);
+    }
+  };
+
   const { formRef, onKeyDown } = useEnterSubmit()
   const inputRef = React.useRef<HTMLTextAreaElement>(null)
   const { getDetailsFromCustomDataSource } = useActions()
@@ -43,21 +54,16 @@ export function PromptForm({
     }
   }, [])
 
+  
+
   return (
     <form
       ref={formRef}
-      onSubmit={async (e: any) => {
+      onSubmit={async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault()
-
-        // Blur focus on mobile
-        if (window.innerWidth < 600) {
-          e.target['message']?.blur()
-        }
-
         const value = input.trim()
         setInput('')
         if (!value) return
-
         // Optimistically add user message UI
         setMessages(currentMessages => [
           ...currentMessages,
@@ -66,10 +72,17 @@ export function PromptForm({
             display: <UserMessage>{value}</UserMessage>
           }
         ])
-
+        const formData = new FormData();
+        formData.append('query', value)
+        formData.append('company', company);
+        formData.append('file', file);
         // Submit and get response message
-        const responseMessage = await getDetailsFromCustomDataSource(value, company)
-        setMessages(currentMessages => [...currentMessages, responseMessage])
+        try {
+          const responseMessage = await getDetailsFromCustomDataSource(formData);
+          setMessages(currentMessages => [...currentMessages, responseMessage]);
+        } catch (error) {
+          console.error('Error sending message:', error);
+        }
       }}
     >
       <div className="relative flex max-h-60 w-full grow flex-col overflow-hidden bg-background px-8 sm:rounded-md sm:border sm:px-12">
@@ -116,6 +129,10 @@ export function PromptForm({
           </Tooltip>
         </div>
       </div>
+      <input
+          type="file"
+          onChange={handleFileUpload}
+        />
     </form>
   )
 }

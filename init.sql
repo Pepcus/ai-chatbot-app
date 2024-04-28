@@ -19,125 +19,98 @@ CREATE TABLE IF NOT EXISTS chat (
     CONSTRAINT fk_user_id FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
--- Create Departments table
-CREATE TABLE departments (
-    department_id SERIAL PRIMARY KEY,
-    department_name VARCHAR(255) NOT NULL
-);
-
--- Create Employees table
-CREATE TABLE employees (
+-- Create Employee table
+CREATE TABLE IF NOT EXISTS employee (
     employee_id SERIAL PRIMARY KEY,
-    first_name VARCHAR(100),
-    last_name VARCHAR(100),
-    department_id INT,
+    name VARCHAR(100),
+    department VARCHAR(255),
     designation VARCHAR(255),
-    FOREIGN KEY (department_id) REFERENCES departments(department_id)
-);
-
--- Create Employee Contacts table
-CREATE TABLE employee_contacts (
-    employee_id INT PRIMARY KEY,
     phone_number VARCHAR(15),
     address TEXT,
-    email VARCHAR(255),
-    FOREIGN KEY (employee_id) REFERENCES employees(employee_id)
+    email VARCHAR(255)
 );
 
--- Create Salaries table
-CREATE TABLE salaries (
+-- Create Salary table
+CREATE TABLE IF NOT EXISTS salary (
+    id SERIAL PRIMARY KEY,
     employee_id INT,
     salary DECIMAL(10, 2),
     from_date DATE,
     to_date DATE,
-    FOREIGN KEY (employee_id) REFERENCES employees(employee_id)
+    FOREIGN KEY (employee_id) REFERENCES employee(employee_id)
 );
 
--- Create Leave Management table
-CREATE TABLE leave_management (
-    leave_id SERIAL PRIMARY KEY,
+-- Create Leave table
+CREATE TABLE IF NOT EXISTS leave (
+    id SERIAL PRIMARY KEY,
     employee_id INT,
     leave_type VARCHAR(100),
     start_date DATE,
     end_date DATE,
     status VARCHAR(50),
-    FOREIGN KEY (employee_id) REFERENCES employees(employee_id)
+    FOREIGN KEY (employee_id) REFERENCES employee(employee_id)
 );
 
--- Insert data into Departments
-INSERT INTO departments (department_name) VALUES 
-('Human Resources'), ('Engineering'), ('Marketing');
+INSERT INTO employee (name, department, designation, phone_number, address, email) VALUES
+('John Smith', 'Engineering', 'Associate Engineer', '1234567890', '123 Main St, New York, NY', 'john.smith@example.com'),
+('Emma Johnson', 'Quality Assurance', 'Engineer', '2345678901', '456 Elm St, Los Angeles, CA', 'emma.johnson@example.com'),
+('Michael Williams', 'Human Resource', 'Senior Engineer', '3456789012', '789 Oak St, Chicago, IL', 'michael.williams@example.com'),
+('Olivia Brown', 'Marketing', 'Lead Engineering', '4567890123', '101 Pine St, San Francisco, CA', 'olivia.brown@example.com'),
+('William Jones', 'Sales', 'Solution Architect', '5678901234', '202 Cedar St, Houston, TX', 'william.jones@example.com'),
+('Sophia Garcia', 'Engineering', 'Associate Engineer', '6789012345', '303 Maple St, Philadelphia, PA', 'sophia.garcia@example.com'),
+('James Martinez', 'Quality Assurance', 'Engineer', '7890123456', '404 Birch St, Phoenix, AZ', 'james.martinez@example.com'),
+('Ava Rodriguez', 'Human Resource', 'Senior Engineer', '8901234567', '505 Oak St, San Antonio, TX', 'ava.rodriguez@example.com'),
+('Alexander Wilson', 'Marketing', 'Lead Engineering', '9012345678', '606 Pine St, San Diego, CA', 'alexander.wilson@example.com'),
+('Mia Lopez', 'Sales', 'Solution Architect', '0123456789', '707 Cedar St, Dallas, TX', 'mia.lopez@example.com'),
+('Ethan Lee', 'Engineering', 'Associate Engineer', '1234567890', '808 Maple St, San Jose, CA', 'ethan.lee@example.com'),
+('Charlotte Gonzales', 'Quality Assurance', 'Engineer', '2345678901', '909 Birch St, Austin, TX', 'charlotte.gonzales@example.com'),
+('Daniel Perez', 'Human Resource', 'Senior Engineer', '3456789012', '1010 Oak St, Jacksonville, FL', 'daniel.perez@example.com'),
+('Amelia Taylor', 'Marketing', 'Lead Engineering', '4567890123', '1111 Pine St, Fort Worth, TX', 'amelia.taylor@example.com'),
+('Matthew Moore', 'Sales', 'Solution Architect', '5678901234', '1212 Cedar St, Columbus, OH', 'matthew.moore@example.com'),
+('Ella King', 'Engineering', 'Associate Engineer', '6789012345', '1313 Maple St, Charlotte, NC', 'ella.king@example.com'),
+('David Hernandez', 'Quality Assurance', 'Engineer', '7890123456', '1414 Birch St, Indianapolis, IN', 'david.hernandez@example.com'),
+('Madison Nelson', 'Human Resource', 'Senior Engineer', '8901234567', '1515 Oak St, San Francisco, CA', 'madison.nelson@example.com'),
+('Carter Walker', 'Marketing', 'Lead Engineering', '9012345678', '1616 Pine St, Seattle, WA', 'carter.walker@example.com'),
+('Penelope Reed', 'Sales', 'Solution Architect', '0123456789', '1717 Cedar St, Denver, CO', 'penelope.reed@example.com'),
+('Aiden Hill', 'Engineering', 'Associate Engineer', '1234567890', '1818 Maple St, Boston, MA', 'aiden.hill@example.com'),
+('Sofia Green', 'Quality Assurance', 'Engineer', '2345678901', '1919 Birch St, Detroit, MI', 'sofia.green@example.com'),
+('Owen Adams', 'Human Resource', 'Senior Engineer', '3456789012', '2020 Oak St, Memphis, TN', 'owen.adams@example.com'),
+('Grace Baker', 'Marketing', 'Lead Engineering', '4567890123', '2121 Pine St, Nashville, TN', 'grace.baker@example.com'),
+('Jack Nelson', 'Sales', 'Solution Architect', '5678901234', '2222 Cedar St, Baltimore, MD', 'jack.nelson@example.com'),
+('Lily Carter', 'Engineering', 'Associate Engineer', '6789012345', '2323 Maple St, Oklahoma City, OK', 'lily.carter@example.com'),
+('Luke Collins', 'Quality Assurance', 'Engineer', '7890123456', '2424 Birch St, Louisville, KY', 'luke.collins@example.com'),
+('Chloe Hall', 'Human Resource', 'Senior Engineer', '8901234567', '2525 Oak St, Milwaukee, WI', 'chloe.hall@example.com'),
+('Jackson Ward', 'Marketing', 'Lead Engineering', '9012345678', '2626 Pine St, Portland, OR', 'jackson.ward@example.com'),
+('Zoe Ramirez', 'Sales', 'Solution Architect', '0123456789', '2727 Cedar St, Las Vegas, NV', 'zoe.ramirez@example.com'),
+('Madelyn Ramirez', 'Engineering', 'Associate Engineer', '1234567890', '2828 Maple St, Albuquerque, NM', 'madelyn.ramirez@example.com'),
+('Henry Long', 'Quality Assurance', 'Engineer', '2345678901', '2929 Birch St, Tucson, AZ', 'henry.long@example.com'),
+('Levi Morgan', 'Human Resource', 'Senior Engineer', '3456789012', '3030 Oak St, Fresno, CA', 'levi.morgan@example.com'),
+('Ellie Cooper', 'Marketing', 'Lead Engineering', '4567890123', '3131 Pine St, Sacramento, CA', 'ellie.cooper@example.com'),
+('Sebastian Rodriguez', 'Sales', 'Solution Architect', '5678901234', '3232 Cedar St, Long Beach, CA', 'sebastian.rodriguez@example.com'),
+('Harper Perez', 'Engineering', 'Associate Engineer', '6789012345', '3333 Maple St, Kansas City, MO', 'harper.perez@example.com'),
+('Nora Hughes', 'Quality Assurance', 'Engineer', '7890123456', '3434 Birch St, Mesa, AZ', 'nora.hughes@example.com'),
+('Mateo Flores', 'Human Resource', 'Senior Engineer', '8901234567', '3535 Oak St, Atlanta, GA', 'mateo.flores@example.com'),
+('Hazel Diaz', 'Marketing', 'Lead Engineering', '9012345678', '3636 Pine St, Virginia Beach, VA', 'hazel.diaz@example.com'),
+('Eleanor Richardson', 'Sales', 'Solution Architect', '0123456789', '3737 Cedar St, Omaha, NE', 'eleanor.richardson@example.com'),
+('Miles Cruz', 'Engineering', 'Associate Engineer', '1234567890', '3838 Maple St, Oakland, CA', 'miles.cruz@example.com'),
+('Liam Edwards', 'Quality Assurance', 'Engineer', '2345678901', '3939 Birch St, Minneapolis, MN', 'liam.edwards@example.com'),
+('Avery Wood', 'Human Resource', 'Senior Engineer', '3456789012', '4040 Oak St, Tulsa, OK', 'avery.wood@example.com'),
+('Scarlett Reyes', 'Marketing', 'Lead Engineering', '4567890123', '4141 Pine St, Arlington, TX', 'scarlett.reyes@example.com'),
+('Grace Richardson', 'Sales', 'Solution Architect', '5678901234', '4242 Cedar St, New Orleans, LA', 'grace.richardson@example.com'),
+('Riley Brooks', 'Engineering', 'Associate Engineer', '6789012345', '4343 Maple St, Wichita, KS', 'riley.brooks@example.com'),
+('Julian Stewart', 'Quality Assurance', 'Engineer', '7890123456', '4444 Birch St, Cleveland, OH', 'julian.stewart@example.com'),
+('Luna Sanchez', 'Human Resource', 'Senior Engineer', '8901234567', '4545 Oak St, Honolulu, HI', 'luna.sanchez@example.com'),
+('Audrey Rogers', 'Marketing', 'Lead Engineering', '9012345678', '4646 Pine St, Tampa, FL', 'audrey.rogers@example.com'),
+('Max Bennett', 'Sales', 'Solution Architect', '0123456789', '4747 Cedar St, Pittsburgh, PA', 'max.bennett@example.com');
 
--- Insert 50 distinct Employees
-INSERT INTO employees (first_name, last_name, department_id, designation) VALUES
-('John', 'Smith', 1, 'Associate Software Engineer'),
-('Jane', 'Doe', 2, 'Software Engineer'),
-('Emily', 'Jones', 1, 'Senior Software Engineer'),
-('Michael', 'Brown', 3, 'Lead Engineer'),
-('Jessica', 'Davis', 1, 'Project Manager'),
-('Matthew', 'Miller', 2, 'Solution Architect'),
-('Ashley', 'Wilson', 1, 'Associate Software Engineer'),
-('Joshua', 'Moore', 3, 'Software Engineer'),
-('Sophia', 'Taylor', 2, 'Senior Software Engineer'),
-('Daniel', 'Anderson', 1, 'Lead Engineer'),
--- Continue with more unique names...
-('Olivia', 'Martin', 2, 'Project Manager'),
-('Lucas', 'Garcia', 3, 'Solution Architect'),
-('Mia', 'Hernandez', 1, 'Software Engineer'),
-('Jack', 'Martinez', 2, 'Senior Software Engineer'),
-('Amelia', 'Lopez', 1, 'Associate Software Engineer'),
-('Ethan', 'Wilson', 3, 'Lead Engineer'),
-('Isabella', 'Gonzalez', 2, 'Software Engineer'),
-('Ryan', 'Wright', 3, 'Project Manager'),
-('Zoe', 'Lopez', 1, 'Senior Software Engineer'),
-('Benjamin', 'Clark', 2, 'Associate Software Engineer'),
--- Ensure all names are distinct...
-('Liam', 'Harris', 3, 'Software Engineer'),
-('Grace', 'Lewis', 1, 'Project Manager'),
-('James', 'Robinson', 2, 'Solution Architect'),
-('Ava', 'Walker', 3, 'Lead Engineer'),
-('Logan', 'Perez', 1, 'Associate Software Engineer'),
-('Mason', 'Hall', 2, 'Software Engineer'),
-('Ella', 'Young', 3, 'Senior Software Engineer'),
-('Carter', 'Allen', 1, 'Project Manager'),
-('Kayla', 'Sanchez', 2, 'Solution Architect'),
-('Noah', 'Wright', 3, 'Lead Engineer'),
-('Chloe', 'King', 1, 'Associate Software Engineer'),
-('Jacob', 'Lee', 2, 'Software Engineer'),
-('Lily', 'Scott', 3, 'Senior Software Engineer'),
-('William', 'Green', 1, 'Project Manager'),
-('Emma', 'Adams', 2, 'Solution Architect'),
-('Owen', 'Baker', 3, 'Lead Engineer'),
-('Sofia', 'Gonzalez', 1, 'Software Engineer'),
-('Luke', 'Nelson', 2, 'Senior Software Engineer'),
-('Avery', 'Carter', 3, 'Associate Software Engineer'),
-('Gabriel', 'Mitchell', 1, 'Software Engineer'),
-('Madison', 'Perez', 2, 'Project Manager'),
-('Henry', 'Roberts', 3, 'Solution Architect'),
-('Mila', 'Campbell', 1, 'Lead Engineer'),
-('Tyler', 'Parker', 2, 'Associate Software Engineer'),
-('Scarlett', 'Evans', 3, 'Software Engineer'),
-('Julian', 'Edwards', 1, 'Senior Software Engineer'),
-('Anna', 'Collins', 2, 'Project Manager'),
-('Eli', 'Stewart', 3, 'Solution Architect'),
-('Zoey', 'Sanchez', 1, 'Lead Engineer'),
-('Nathan', 'Morris', 2, 'Associate Software Engineer');
-
--- Insert Contacts for all 50 Employees
-INSERT INTO employee_contacts (employee_id, phone_number, address, email) 
-SELECT employee_id, 
-    '555-' || LPAD(employee_id::TEXT, 4, '0'), 
-    '123 Main St #' || employee_id || ', Anytown, USA', 
-    LOWER(first_name || '.' || last_name || '@example.com')
-FROM employees;
 
 -- Insert Salary data for 50 Employees
-INSERT INTO salaries (employee_id, salary, from_date, to_date) 
+INSERT INTO salary (employee_id, salary, from_date, to_date) 
 SELECT employee_id, 50000 + (employee_id * 500), '2023-01-01', '2023-12-31'
-FROM employees;
+FROM employee;
 
 -- Insert Leave Management data for 50 Employees with diverse leave types and statuses
-INSERT INTO leave_management (employee_id, leave_type, start_date, end_date, status)
+INSERT INTO leave (employee_id, leave_type, start_date, end_date, status)
 SELECT employee_id, 
        CASE MOD(employee_id, 5)
            WHEN 0 THEN 'Vacation'
@@ -153,4 +126,4 @@ SELECT employee_id,
            WHEN 1 THEN 'Pending'
            WHEN 2 THEN 'Denied'
        END AS status
-FROM employees;
+FROM employee;

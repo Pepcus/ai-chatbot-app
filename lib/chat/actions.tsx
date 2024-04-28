@@ -31,19 +31,31 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY || ''
 })
 
-async function getDetailsFromCustomDataSource(query:string, company:any) {
+async function getDetailsFromCustomDataSource(formData:any) {
   'use server'
-  
-  console.log("========custom data source fucntion called=========")
   const API_SERVER_URL = process.env.API_SERVER_URL
-  const response = await fetch(`${API_SERVER_URL}/response?company=${company}&query=${query}`);
+  let response:any = null
+  const company = formData.get('company');
+  const query = formData.get('query');
+  const file = formData.get('file');
+
+  if(file != 'null') {
+    console.log("========post API called=========", file)
+    response = await fetch(`${API_SERVER_URL}/api/response`, {
+      method: 'POST',
+      body: formData,
+    });
+  } else {
+    console.log("========GET API called=========", file)
+    response = await fetch(`${API_SERVER_URL}/response?company=${company}&query=${query}`);
+  }
+
   console.log("========response from server =========", response)
 
   if (!response.ok) {
     throw new Error('Network response was not ok');
   }
   const resp = await response.json();
-  console.log("========resp =========", resp)
 
   return {
     id: nanoid(),
