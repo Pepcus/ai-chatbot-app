@@ -47,7 +47,7 @@ async function getDetailsFromCustomDataSource(formData:any) {
     });
   } else {
     console.log("========GET API called=========", file)
-    response = await fetch(`${API_SERVER_URL}/response?company=${company}&query=${query}`);
+    response = await fetch(`${API_SERVER_URL}/api/response?company=${company}&query=${query}`);
   }
 
   console.log("========response from server =========", response)

@@ -34,7 +34,7 @@ CREATE TABLE IF NOT EXISTS employee (
 CREATE TABLE IF NOT EXISTS salary (
     id SERIAL PRIMARY KEY,
     employee_id INT,
-    salary DECIMAL(10, 2),
+    salary_amount DECIMAL(10, 2),
     from_date DATE,
     to_date DATE,
     FOREIGN KEY (employee_id) REFERENCES employee(employee_id)
@@ -105,7 +105,7 @@ INSERT INTO employee (name, department, designation, phone_number, address, emai
 
 
 -- Insert Salary data for 50 Employees
-INSERT INTO salary (employee_id, salary, from_date, to_date) 
+INSERT INTO salary (employee_id, salary_amount, from_date, to_date) 
 SELECT employee_id, 50000 + (employee_id * 500), '2023-01-01', '2023-12-31'
 FROM employee;
 
