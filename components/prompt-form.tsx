@@ -21,10 +21,12 @@ import { useRouter } from 'next/navigation'
 
 export function PromptForm({
   input,
-  setInput
+  setInput,
+  chatId
 }: {
   input: string
   setInput: (value: string) => void
+  chatId: string | undefined
 }) {
   const router = useRouter()
   
@@ -77,8 +79,9 @@ export function PromptForm({
         formData.append('company', company);
         formData.append('file', file);
         // Submit and get response message
+        console.log("===chatId inside prompt-form.tsx====", chatId)
         try {
-          const responseMessage = await getDetailsFromCustomDataSource(formData);
+          const responseMessage = await getDetailsFromCustomDataSource(formData, chatId);
           setMessages(currentMessages => [...currentMessages, responseMessage]);
         } catch (error) {
           console.error('Error sending message:', error);

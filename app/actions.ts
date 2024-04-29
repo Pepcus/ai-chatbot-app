@@ -77,11 +77,15 @@ export async function clearChats() {
 
 export async function saveChat(chat: Chat) {
   const session = await auth()
+  console.log("=======chat.messages=========" + chat.messages)
   if (session && session.user) {
     try {
       let existingChat = await getChat(chat.id, chat.userId)
       if (existingChat != null) {
-        await pool.query( `UPDATE chat SET messages = $1 WHERE id = $2 AND user_id = $3`, [chat.messages, chat.id, chat.userId]);
+        let existing = existingChat.messages
+        let newChat = chat.messages
+        console.log("=======existingChat.messages=========" + existingChat.messages)
+        await pool.query( `UPDATE chat SET messages = $1 WHERE id = $2 AND user_id = $3`, [[...existing, ...newChat], chat.id, chat.userId]);
       } else {
         await pool.query(
           `INSERT INTO chat (id, title, created_at, user_id, path, messages, share_path) VALUES ($1, $2, $3, $4, $5, $6, $7)`,

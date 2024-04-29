@@ -15,17 +15,16 @@ import {
 } from '@/lib/utils'
 import { saveChat } from '@/app/actions'
 import { SpinnerMessage, UserMessage } from '@/components/utils/message'
-import { Chat } from '@/lib/types'
+import { Chat, ChatMessage } from '@/lib/types'
 import { auth } from '@/auth'
 
-async function getDetailsFromCustomDataSource(formData: any) {
+async function getDetailsFromCustomDataSource(formData: any, chatId: any) {
   'use server'
   try {
     const API_SERVER_URL = process.env.API_SERVER_URL
     const company = formData.get('company');
     const query = formData.get('query');
     const file = formData.get('file');
-
     let response: any;
 
     if (file != 'null' && file != null) {
@@ -44,7 +43,41 @@ async function getDetailsFromCustomDataSource(formData: any) {
     }
 
     const resp = await response.json();
-    
+
+    const session = await auth()
+
+    if (session && session.user) {
+      const createdAt = new Date()
+      const userId = session.user.id as string
+      const path = `/chat/${chatId}`
+      const title = query.substring(0, 100)
+
+      const messages = []
+      messages.push({
+        id: nanoid(),
+        createdAt: new Date(),
+        role: 'user',
+        content: query
+      })
+      messages.push({
+        id: nanoid(),
+        createdAt: new Date(),
+        role: 'system',
+        content: resp
+      })
+
+      const chat: Chat = {
+        id: chatId,
+        title,
+        userId,
+        createdAt,
+        messages: messages,
+        path
+      }
+
+      await saveChat(chat)
+    }
+
     return {
       id: nanoid(),
       display: (
