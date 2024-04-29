@@ -2,19 +2,13 @@ import 'server-only'
 
 import {
   createAI,
-  getMutableAIState,
-  getAIState,
-  render,
-  createStreamableValue
+  getAIState
 } from 'ai/rsc'
 
 import {
   BotCard,
   BotMessage
 } from '@/components/utils'
-
-import { Response } from '@/components/responses/response'
-import { ResponseSkeleton } from '@/components/responses/response-skeleton'
 
 import {
   nanoid, sleep
@@ -32,7 +26,7 @@ async function getDetailsFromCustomDataSource(formData: any) {
     const query = formData.get('query');
     const file = formData.get('file');
 
-    let response: Response;
+    let response: any;
 
     if (file != 'null' && file != null) {
       console.log("======== POST API called =========");
@@ -45,19 +39,17 @@ async function getDetailsFromCustomDataSource(formData: any) {
       response = await fetch(`${API_SERVER_URL}/api/response?company=${company}&query=${query}`);
     }
 
-    console.log("======== Response from server =========", response);
-
     if (!response.ok) {
       throw new Error('Network response was not ok');
     }
 
     const resp = await response.json();
-
+    
     return {
       id: nanoid(),
       display: (
         <BotCard>
-          <Response props={resp} />
+          <BotMessage content={resp} />
         </BotCard>
       )
     };
@@ -146,7 +138,7 @@ export const getUIStateFromAIState = (aiState: Chat) => {
         message.role === 'function' ? (
          message.name === 'getDetailsFromCustomDataSource' ? (
             <BotCard>
-              <Response props={message.content} />
+              <BotMessage content={message.content} />
             </BotCard>
           ) : null
         ) : message.role === 'user' ? (
