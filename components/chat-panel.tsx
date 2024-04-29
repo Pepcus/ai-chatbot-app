@@ -72,10 +72,11 @@ export function ChatPanel({
                       display: <UserMessage>{example.message}</UserMessage>
                     }
                   ])
+                  const formData = new FormData();
+                  formData.append('query', example.message)
+                  formData.append('company', company);
 
-                  const responseMessage = await getDetailsFromCustomDataSource(
-                    example.message, company, null
-                  )
+                  const responseMessage = await getDetailsFromCustomDataSource(formData)
 
                   setMessages(currentMessages => [
                     ...currentMessages,

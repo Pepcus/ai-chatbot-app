@@ -7,14 +7,12 @@ import {
   render,
   createStreamableValue
 } from 'ai/rsc'
-import OpenAI from 'openai'
 
 import {
   BotCard,
   BotMessage
 } from '@/components/utils'
 
-import { string, z } from 'zod'
 import { Response } from '@/components/responses/response'
 import { ResponseSkeleton } from '@/components/responses/response-skeleton'
 
@@ -25,46 +23,51 @@ import { saveChat } from '@/app/actions'
 import { SpinnerMessage, UserMessage } from '@/components/utils/message'
 import { Chat } from '@/lib/types'
 import { auth } from '@/auth'
-import { getUser } from '@/app/login/actions'
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY || ''
-})
-
-async function getDetailsFromCustomDataSource(formData:any) {
+async function getDetailsFromCustomDataSource(formData: any) {
   'use server'
-  const API_SERVER_URL = process.env.API_SERVER_URL
-  let response:any = null
-  const company = formData.get('company');
-  const query = formData.get('query');
-  const file = formData.get('file');
+  try {
+    const API_SERVER_URL = process.env.API_SERVER_URL
+    const company = formData.get('company');
+    const query = formData.get('query');
+    const file = formData.get('file');
 
-  if(file != 'null') {
-    console.log("========post API called=========", file)
-    response = await fetch(`${API_SERVER_URL}/api/response`, {
-      method: 'POST',
-      body: formData,
-    });
-  } else {
-    console.log("========GET API called=========", file)
-    response = await fetch(`${API_SERVER_URL}/api/response?company=${company}&query=${query}`);
-  }
+    let response: Response;
 
-  console.log("========response from server =========", response)
+    if (file != 'null' && file != null) {
+      console.log("======== POST API called =========");
+      response = await fetch(`${API_SERVER_URL}/api/response`, {
+        method: 'POST',
+        body: formData,
+      });
+    } else {
+      console.log("======== GET API called =========");
+      response = await fetch(`${API_SERVER_URL}/api/response?company=${company}&query=${query}`);
+    }
 
-  if (!response.ok) {
-    throw new Error('Network response was not ok');
-  }
-  const resp = await response.json();
+    console.log("======== Response from server =========", response);
 
-  return {
-    id: nanoid(),
-    display:
-       <BotCard>
-         <Response props={resp}/>
-       </BotCard>
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+
+    const resp = await response.json();
+
+    return {
+      id: nanoid(),
+      display: (
+        <BotCard>
+          <Response props={resp} />
+        </BotCard>
+      )
+    };
+  } catch (error) {
+    console.error('Error occurred while fetching data:', error);
+    // Handle error appropriately, e.g., show error message to user
+    throw error; // Rethrow the error for the caller to handle
   }
 }
+
 
 export type Message = {
   role: 'user' | 'assistant' | 'system' | 'function' | 'data' | 'tool'
