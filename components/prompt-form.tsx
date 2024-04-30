@@ -30,15 +30,6 @@ export function PromptForm({
 }) {
   const router = useRouter()
   
-  const [file, setFile] = useState<any | null>(null);
-
-  const handleFileUpload = (event: ChangeEvent<HTMLInputElement>) => {
-    const selectedFile = event.target.files?.[0];
-    if (selectedFile) {
-      setFile(selectedFile);
-    }
-  };
-
   const { formRef, onKeyDown } = useEnterSubmit()
   const inputRef = React.useRef<HTMLTextAreaElement>(null)
   const { getDetailsFromCustomDataSource } = useActions()
@@ -56,8 +47,6 @@ export function PromptForm({
     }
   }, [])
 
-  
-
   return (
     <form
       ref={formRef}
@@ -74,14 +63,9 @@ export function PromptForm({
             display: <UserMessage>{value}</UserMessage>
           }
         ])
-        const formData = new FormData();
-        formData.append('query', value)
-        formData.append('company', company);
-        formData.append('file', file);
         // Submit and get response message
-        console.log("===chatId inside prompt-form.tsx====", chatId)
         try {
-          const responseMessage = await getDetailsFromCustomDataSource(formData, chatId);
+          const responseMessage = await getDetailsFromCustomDataSource(company, value, chatId);
           setMessages(currentMessages => [...currentMessages, responseMessage]);
         } catch (error) {
           console.error('Error sending message:', error);
@@ -132,10 +116,6 @@ export function PromptForm({
           </Tooltip>
         </div>
       </div>
-      <input
-          type="file"
-          onChange={handleFileUpload}
-        />
     </form>
   )
 }

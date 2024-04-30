@@ -3,7 +3,7 @@ import * as React from 'react'
 import { PromptForm } from '@/components/prompt-form'
 import { ButtonScrollToBottom } from '@/components/button-scroll-to-bottom'
 import { FooterText } from '@/components/footer'
-import { useAIState, useActions, useUIState } from 'ai/rsc'
+import { useActions, useUIState } from 'ai/rsc'
 import type { AI } from '@/lib/chat/actions'
 import { nanoid } from 'nanoid'
 import { UserMessage } from './utils/message'
@@ -72,12 +72,7 @@ export function ChatPanel({
                       display: <UserMessage>{example.message}</UserMessage>
                     }
                   ])
-                  const formData = new FormData();
-                  formData.append('query', example.message)
-                  formData.append('company', company);
-                  console.log("===========chatId inside chat-panel.tsx=======", id)
-                  const responseMessage = await getDetailsFromCustomDataSource(formData, id)
-
+                  const responseMessage = await getDetailsFromCustomDataSource(company, example.message, id)
                   setMessages(currentMessages => [
                     ...currentMessages,
                     responseMessage

@@ -18,25 +18,11 @@ import { SpinnerMessage, UserMessage } from '@/components/utils/message'
 import { Chat, ChatMessage } from '@/lib/types'
 import { auth } from '@/auth'
 
-async function getDetailsFromCustomDataSource(formData: any, chatId: any) {
+async function getDetailsFromCustomDataSource(company: any, query:any, chatId: any) {
   'use server'
   try {
     const API_SERVER_URL = process.env.API_SERVER_URL
-    const company = formData.get('company');
-    const query = formData.get('query');
-    const file = formData.get('file');
-    let response: any;
-
-    if (file != 'null' && file != null) {
-      console.log("======== POST API called =========");
-      response = await fetch(`${API_SERVER_URL}/api/response`, {
-        method: 'POST',
-        body: formData,
-      });
-    } else {
-      console.log("======== GET API called =========");
-      response = await fetch(`${API_SERVER_URL}/api/response?company=${company}&query=${query}`);
-    }
+    let response = await fetch(`${API_SERVER_URL}/api/response?company=${company}&query=${query}`);
 
     if (!response.ok) {
       throw new Error('Network response was not ok');
@@ -92,7 +78,6 @@ async function getDetailsFromCustomDataSource(formData: any, chatId: any) {
     throw error; // Rethrow the error for the caller to handle
   }
 }
-
 
 export type Message = {
   role: 'user' | 'assistant' | 'system' | 'function' | 'data' | 'tool'
