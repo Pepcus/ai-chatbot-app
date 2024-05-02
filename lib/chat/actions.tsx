@@ -14,21 +14,34 @@ import {
   nanoid, sleep
 } from '@/lib/utils'
 import { saveChat } from '@/app/actions'
-import { SpinnerMessage, UserMessage } from '@/components/utils/message'
-import { Chat, ChatMessage } from '@/lib/types'
+import { Chat } from '@/lib/types'
 import { auth } from '@/auth'
 
 async function getDetailsFromCustomDataSource(company: any, query:any, chatId: any) {
   'use server'
   try {
     const API_SERVER_URL = process.env.API_SERVER_URL
-    let response = await fetch(`${API_SERVER_URL}/api/response?company=${company}&query=${query}`);
+    const API_CLIENT_SECRET = process.env.API_CLIENT_SECRET
 
-    if (!response.ok) {
-      throw new Error('Network response was not ok');
+    let resp: any = null;
+    try {
+      const response = await fetch(`${API_SERVER_URL}/api/response?company=${company}&query=${query}`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${API_CLIENT_SECRET}`
+        }
+      });
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      resp = await response.json();
+      console.log("=======response.json=========", resp);
+    } catch (error) {
+      console.error('There was a problem with your fetch operation:', error);
     }
-
-    const resp = await response.json();
+    
+    console.log("===resp===========", resp['output']);
+    
 
     const session = await auth()
 
@@ -49,7 +62,7 @@ async function getDetailsFromCustomDataSource(company: any, query:any, chatId: a
         id: nanoid(),
         createdAt: new Date(),
         role: 'system',
-        content: resp
+        content: resp.output
       })
 
       const chat: Chat = {
@@ -68,7 +81,7 @@ async function getDetailsFromCustomDataSource(company: any, query:any, chatId: a
       id: nanoid(),
       display: (
         <BotCard>
-          <BotMessage content={resp} />
+          <BotMessage content={resp.output} />
         </BotCard>
       )
     };
