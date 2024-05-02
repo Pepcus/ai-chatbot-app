@@ -40,7 +40,7 @@ async function getDetailsFromCustomDataSource(company: any, query:any, chatId: a
       console.error('There was a problem with your fetch operation:', error);
     }
     
-    console.log("===resp===========", resp['output']);
+    console.log("===resp===========", resp);
     
 
     const session = await auth()
@@ -62,7 +62,7 @@ async function getDetailsFromCustomDataSource(company: any, query:any, chatId: a
         id: nanoid(),
         createdAt: new Date(),
         role: 'system',
-        content: resp.output
+        content: resp
       })
 
       const chat: Chat = {
@@ -81,7 +81,7 @@ async function getDetailsFromCustomDataSource(company: any, query:any, chatId: a
       id: nanoid(),
       display: (
         <BotCard>
-          <BotMessage content={resp.output} />
+          <BotMessage content={resp} />
         </BotCard>
       )
     };
