@@ -37,6 +37,21 @@ export async function getChat(id: string, userId: any) {
   return chat
 }
 
+export async function getChatById(id: string) {
+  let chat = null;
+  try {
+    const result = await pool.query(`SELECT * FROM chat where id=$1`, [id]);
+    chat = result.rows[0]
+  } catch (error) {
+    console.error('Error in fetching chats.', error);
+  }
+
+  if (!chat) {
+    return null
+  }
+  return chat
+}
+
 export async function removeChat({ id, path }: { id: string; path: string }) {
   const session = await auth()
 
@@ -77,14 +92,14 @@ export async function clearChats() {
 
 export async function saveChat(chat: Chat) {
   const session = await auth()
-  console.log("=======chat.messages=========" + chat.messages)
+  console.log("=======chat.messages=========" + JSON.stringify(chat.messages))
   if (session && session.user) {
     try {
       let existingChat = await getChat(chat.id, chat.userId)
       if (existingChat != null) {
         let existing = existingChat.messages
         let newChat = chat.messages
-        console.log("=======existingChat.messages=========" + existingChat.messages)
+        console.log("=======existingChat.messages=========" + JSON.stringify(existingChat.messages))
         await pool.query( `UPDATE chat SET messages = $1 WHERE id = $2 AND user_id = $3`, [[...existing, ...newChat], chat.id, chat.userId]);
       } else {
         await pool.query(

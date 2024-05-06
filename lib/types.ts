@@ -1,4 +1,3 @@
-import { Message } from 'ai'
 
 export interface Chat extends Record<string, any> {
   id: string
@@ -11,10 +10,8 @@ export interface Chat extends Record<string, any> {
 }
 
 export interface ChatMessage {
-  id: string
-  content: string
-  createdAt: Date
   role: string
+  content: string
 }
 
 
