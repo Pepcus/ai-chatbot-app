@@ -17,12 +17,11 @@ async function getDetailsFromCustomDataSource(role: any, query:any, chatId: any)
   try {
     const API_SERVER_URL = process.env.API_SERVER_URL
     const API_CLIENT_SECRET = process.env.API_CLIENT_SECRET
-
     console.log("===chatId===========", chatId);
 
     let resp: any = null;
     try {
-      const response = await fetch(`${API_SERVER_URL}/api/response?role=${role}&query=${query}`, {
+      const response = await fetch(`${API_SERVER_URL}/api/response?role=${role}&query=${query}&chat_id=${chatId}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
