@@ -1,47 +1,33 @@
 import 'server-only'
 
-import {
-  createAI,
-  getAIState
-} from 'ai/rsc'
+import { createAI } from 'ai/rsc'
 
 import {
   BotCard,
   BotMessage
 } from '@/components/utils'
 
-import {
-  nanoid, sleep
-} from '@/lib/utils'
-import { saveChat, getChatById } from '@/app/actions'
+import { nanoid } from '@/lib/utils'
+import { saveChat } from '@/app/actions'
 import { Chat } from '@/lib/types'
 import { auth } from '@/auth'
 
-async function getDetailsFromCustomDataSource(company: any, query:any, chatId: any) {
+async function getDetailsFromCustomDataSource(role: any, query:any, chatId: any) {
   'use server'
   try {
     const API_SERVER_URL = process.env.API_SERVER_URL
     const API_CLIENT_SECRET = process.env.API_CLIENT_SECRET
-    const SYSTEM_PROMPT = process.env.SYSTEM_PROMPT
-    const existingChat = await getChatById(chatId);
+
     console.log("===chatId===========", chatId);
-    let context = {};
-    if (existingChat) {
-      context = [...existingChat.messages, {"role": "user", "content": query}]
-    } else {
-      context = [{"role": "system", "content": SYSTEM_PROMPT}, 
-                 {"role": "user", "content": query}
-                ]
-    }
+
     let resp: any = null;
     try {
-      const response = await fetch(`${API_SERVER_URL}/api/response?company=${company}&query=${query}`, {
-        method: 'POST',
+      const response = await fetch(`${API_SERVER_URL}/api/response?role=${role}&query=${query}`, {
+        method: 'GET',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${API_CLIENT_SECRET}`
-        },
-        body: JSON.stringify(context)
+        }
       });
       if (!response.ok) {
         throw new Error('Network response was not ok');
@@ -51,8 +37,8 @@ async function getDetailsFromCustomDataSource(company: any, query:any, chatId: a
       console.error('There was a problem with your fetch operation:', error);
     }
     console.log("===resp===========", resp);
-    const session = await auth()
 
+    const session = await auth()
     if (session && session.user) {
       const createdAt = new Date()
       const userId = session.user.id as string
@@ -60,19 +46,13 @@ async function getDetailsFromCustomDataSource(company: any, query:any, chatId: a
       const title = query.substring(0, 100)
 
       const messages = []
-      if (!existingChat) {
-        messages.push({
-          role: 'system',
-          content: SYSTEM_PROMPT
-        })
-      }
       messages.push({
         role: 'user',
         content: query
       })
       messages.push({
         role: 'assistant',
-        content: resp
+        content: resp.output
       })
       const chat: Chat = {
         id: chatId,
@@ -90,7 +70,7 @@ async function getDetailsFromCustomDataSource(company: any, query:any, chatId: a
       id: nanoid(),
       display: (
         <BotCard>
-          <BotMessage content={resp} />
+          <BotMessage content={resp['output']} />
         </BotCard>
       )
     };

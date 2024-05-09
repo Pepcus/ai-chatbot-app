@@ -13,7 +13,7 @@ export async function createUser(
   email: string,
   hashedPassword: string,
   salt:string,
-  company: string
+  role: string
 ) {
   const existingUser = await getUser(email)
 
@@ -26,8 +26,8 @@ export async function createUser(
     try {
       // Create user in the database
       await pool.query(
-        'INSERT INTO users (name, email, password, salt, company) VALUES ($1, $2, $3, $4, $5)',
-        [name, email, hashedPassword, salt, company]
+        'INSERT INTO users (name, email, password, salt, role) VALUES ($1, $2, $3, $4, $5)',
+        [name, email, hashedPassword, salt, role]
       );
     } catch (error) {
       console.error('Error creating user:', error);
@@ -52,7 +52,7 @@ export async function signup(
   const name = formData.get('name') as string
   const email = formData.get('email') as string
   const password = formData.get('password') as string
-  const company = formData.get('company') as string
+  const role = formData.get('role') as string
 
   const parsedCredentials = z
     .object({
@@ -76,7 +76,7 @@ export async function signup(
     const hashedPassword = getStringFromBuffer(hashedPasswordBuffer)
 
     try {
-      const result = await createUser(name, email, hashedPassword, salt, company)
+      const result = await createUser(name, email, hashedPassword, salt, role)
 
       if (result.resultCode === ResultCode.UserCreated) {
         await signIn('credentials', {

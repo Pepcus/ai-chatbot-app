@@ -36,9 +36,9 @@ export function PromptForm({
   const [_, setMessages] = useUIState<typeof AI>()
 
   const userString:any = localStorage.getItem('user')
-  let company:any = null
+  let role:any = null
   if (userString != null) {
-    company = JSON.parse(userString).company
+    role = JSON.parse(userString).role
   }
 
   React.useEffect(() => {
@@ -65,7 +65,7 @@ export function PromptForm({
         ])
         // Submit and get response message
         try {
-          const responseMessage = await getDetailsFromCustomDataSource(company, value, chatId);
+          const responseMessage = await getDetailsFromCustomDataSource(role, value, chatId);
           setMessages(currentMessages => [...currentMessages, responseMessage]);
         } catch (error) {
           console.error('Error sending message:', error);

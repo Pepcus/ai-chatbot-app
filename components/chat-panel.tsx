@@ -29,9 +29,9 @@ export function ChatPanel({
   const { getDetailsFromCustomDataSource } = useActions()
 
   const userString:any = localStorage.getItem('user')
-  let company:any = null
+  let role:any = null
   if (userString != null) {
-    company = JSON.parse(userString).company
+    role = JSON.parse(userString).role
   }
   
   const exampleMessages = [
@@ -72,7 +72,7 @@ export function ChatPanel({
                       display: <UserMessage>{example.message}</UserMessage>
                     }
                   ])
-                  const responseMessage = await getDetailsFromCustomDataSource(company, example.message, id)
+                  const responseMessage = await getDetailsFromCustomDataSource(role, example.message, id)
                   setMessages(currentMessages => [
                     ...currentMessages,
                     responseMessage
