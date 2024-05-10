@@ -20,7 +20,8 @@ export async function createUser(
   if (existingUser) {
     return {
       type: 'error',
-      resultCode: ResultCode.UserAlreadyExists
+      resultCode: ResultCode.UserAlreadyExists,
+      user: null
     }
   } else {
     try {
@@ -35,7 +36,8 @@ export async function createUser(
 
     return {
       type: 'success',
-      resultCode: ResultCode.UserCreated
+      resultCode: ResultCode.UserCreated,
+      user: {email, role}
     }
   }
 }
@@ -43,6 +45,7 @@ export async function createUser(
 interface Result {
   type: string
   resultCode: ResultCode
+  user: any
 }
 
 export async function signup(
@@ -93,25 +96,29 @@ export async function signup(
           case 'CredentialsSignin':
             return {
               type: 'error',
-              resultCode: ResultCode.InvalidCredentials
+              resultCode: ResultCode.InvalidCredentials,
+              user: null
             }
           default:
             return {
               type: 'error',
-              resultCode: ResultCode.UnknownError
+              resultCode: ResultCode.UnknownError,
+              user: null
             }
         }
       } else {
         return {
           type: 'error',
-          resultCode: ResultCode.UnknownError
+          resultCode: ResultCode.UnknownError,
+          user: null
         }
       }
     }
   } else {
     return {
       type: 'error',
-      resultCode: ResultCode.InvalidCredentials
+      resultCode: ResultCode.InvalidCredentials,
+      user: null
     }
   }
 }

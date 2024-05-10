@@ -18,6 +18,7 @@ export default function SignupForm() {
       if (result.type === 'error') {
         toast.error(getMessageFromCode(result.resultCode))
       } else {
+        localStorage.setItem('user', JSON.stringify(result.user))
         toast.success(getMessageFromCode(result.resultCode))
         router.refresh()
       }
