@@ -51,7 +51,7 @@ async function getDetailsFromCustomDataSource(role: any, query:any, chatId: any)
       })
       messages.push({
         role: 'assistant',
-        content: resp.output
+        content: resp
       })
       const chat: Chat = {
         id: chatId,
@@ -69,7 +69,7 @@ async function getDetailsFromCustomDataSource(role: any, query:any, chatId: any)
       id: nanoid(),
       display: (
         <BotCard>
-          <BotMessage content={resp['output']} />
+          <BotMessage content={resp} />
         </BotCard>
       )
     };
