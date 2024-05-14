@@ -92,19 +92,19 @@ export default function SignupForm() {
           <div className="mt-4">
             <label
               className="mb-3 mt-5 block text-xs font-medium text-zinc-400"
-              htmlFor="role"
+              htmlFor="company"
             >
-              Role
+              Company
             </label>
             <div className="relative">
               <select
-                id="role"
-                name="role"
+                id="company"
+                name="company"
                 className="peer block w-full rounded-md border bg-zinc-50 px-2 py-[9px] text-sm outline-none placeholder:text-zinc-500 dark:border-zinc-800 dark:bg-zinc-950"
               >
-                <option value="">Select Role</option>
-                <option value="HR_MANAGER">HR MANAGER</option>
-                <option value="HR_ASSISTANT">HR ASSISTANT</option>
+                <option value="">Select Company</option>
+                <option value="REZ">Rezora</option>
+                <option value="TSS">Technical Safety Services</option>
               </select>
             </div>
           </div>

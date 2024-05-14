@@ -1,27 +1,31 @@
 import 'server-only'
 
-import { createAI } from 'ai/rsc'
+import {
+  createAI,
+  getAIState
+} from 'ai/rsc'
 
 import {
   BotCard,
   BotMessage
 } from '@/components/utils'
 
-import { nanoid } from '@/lib/utils'
-import { saveChat } from '@/app/actions'
+import {
+  nanoid, sleep
+} from '@/lib/utils'
+import { saveChat, getChatById } from '@/app/actions'
 import { Chat } from '@/lib/types'
 import { auth } from '@/auth'
 
-async function getDetailsFromCustomDataSource(role: any, query:any, chatId: any) {
+async function getDetailsFromCustomDataSource(company: any, query:any, chatId: any) {
   'use server'
   try {
     const API_SERVER_URL = process.env.API_SERVER_URL
     const API_CLIENT_SECRET = process.env.API_CLIENT_SECRET
     console.log("===chatId===========", chatId);
-
     let resp: any = null;
     try {
-      const response = await fetch(`${API_SERVER_URL}/api/response?role=${role}&query=${query}&chat_id=${chatId}`, {
+      const response = await fetch(`${API_SERVER_URL}/api/response?company=${company}&query=${query}&chat_id=${chatId}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -36,14 +40,13 @@ async function getDetailsFromCustomDataSource(role: any, query:any, chatId: any)
       console.error('There was a problem with your fetch operation:', error);
     }
     console.log("===resp===========", resp);
-
     const session = await auth()
+
     if (session && session.user) {
       const createdAt = new Date()
       const userId = session.user.id as string
       const path = `/chat/${chatId}`
       const title = query.substring(0, 100)
-
       const messages = []
       messages.push({
         role: 'user',
