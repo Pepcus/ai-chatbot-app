@@ -6,7 +6,7 @@ import { Session } from '@/lib/types'
 import { getMissingKeys } from '../actions'
 
 export const metadata = {
-  title: 'ProBot - An AI Powered Chatbot'
+  title: 'Pepcus Bot - Generative AI Demo Bot'
 }
 
 export default async function IndexPage() {
