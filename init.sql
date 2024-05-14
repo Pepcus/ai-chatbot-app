@@ -106,22 +106,22 @@ INSERT INTO employee (name, department, designation, phone_number, address, emai
 
 -- Insert Salary data for 50 Employees
 INSERT INTO salary (employee_id, salary_amount, from_date, to_date) 
-SELECT employee_id, 50000 + (employee_id * 500), '2023-01-01', '2023-12-31'
+SELECT id, 50000 + (id * 500), '2023-01-01', '2023-12-31'
 FROM employee;
 
 -- Insert Leave Management data for 50 Employees with diverse leave types and statuses
 INSERT INTO leave (employee_id, leave_type, start_date, end_date, status)
-SELECT employee_id, 
-       CASE MOD(employee_id, 5)
+SELECT id, 
+       CASE MOD(id, 5)
            WHEN 0 THEN 'Vacation'
            WHEN 1 THEN 'Sick'
            WHEN 2 THEN 'Personal'
            WHEN 3 THEN 'Maternity'
            WHEN 4 THEN 'Paternity'
        END AS leave_type,
-       TO_DATE('2023-01-' || LPAD((employee_id % 28 + 1)::text, 2, '0'), 'YYYY-MM-DD') AS start_date,
-       TO_DATE('2023-01-' || LPAD(LEAST(employee_id % 28 + 3 + employee_id % 5, 31)::text, 2, '0'), 'YYYY-MM-DD') AS end_date,
-       CASE MOD(employee_id, 3)
+       TO_DATE('2023-01-' || LPAD((id % 28 + 1)::text, 2, '0'), 'YYYY-MM-DD') AS start_date,
+       TO_DATE('2023-01-' || LPAD(LEAST(id % 28 + 3 + id % 5, 31)::text, 2, '0'), 'YYYY-MM-DD') AS end_date,
+       CASE MOD(id, 3)
            WHEN 0 THEN 'Approved'
            WHEN 1 THEN 'Pending'
            WHEN 2 THEN 'Denied'
