@@ -2,7 +2,6 @@ import * as React from 'react'
 
 import { PromptForm } from '@/components/prompt-form'
 import { ButtonScrollToBottom } from '@/components/button-scroll-to-bottom'
-import { FooterText } from '@/components/footer'
 import { useActions, useUIState } from 'ai/rsc'
 import type { AI } from '@/lib/chat/actions'
 import { nanoid } from 'nanoid'
@@ -88,7 +87,6 @@ export function ChatPanel({
         </div>
         <div className="space-y-4 border-t bg-background px-4 py-2 shadow-lg sm:rounded-t-xl sm:border md:py-4">
           <PromptForm input={input} setInput={setInput} chatId={id}/>
-          <FooterText className="hidden sm:block" />
         </div>
       </div>
     </div>
