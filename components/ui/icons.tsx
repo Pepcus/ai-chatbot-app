@@ -207,6 +207,17 @@ function IconSpinner({ className, ...props }: React.ComponentProps<'svg'>) {
   )
 }
 
+function IconBotMessage({ className, ...props }: React.ComponentProps<'img'>) {
+  return (
+    <img
+      src="/favicon.svg" // Replace "/path/to/message.svg" with the actual path to your image
+      alt="Bot Icon"
+      className={cn('size-4', className)}
+      {...props}
+    />
+  )
+}
+
 function IconMessage({ className, ...props }: React.ComponentProps<'svg'>) {
   return (
     <svg
@@ -455,6 +466,7 @@ export {
   IconArrowElbow,
   IconSpinner,
   IconMessage,
+  IconBotMessage,
   IconTrash,
   IconRefresh,
   IconStop,

@@ -26,6 +26,8 @@ export default function SignupForm() {
   }, [result, router])
 
   return (
+    <div className="flex flex-col items-center">
+    <img src="/pepcus-logo.png" alt="Logo" className="h-16 w-16 mb-4" />
     <form
       action={dispatch}
       className="flex flex-col items-center gap-4 space-y-3"
@@ -117,6 +119,7 @@ export default function SignupForm() {
         <div className="font-semibold underline">Log in</div>
       </Link>
     </form>
+    </div>
   )
 }
 
