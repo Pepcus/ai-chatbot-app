@@ -105,8 +105,8 @@ export default function SignupForm() {
                 className="peer block w-full rounded-md border bg-zinc-50 px-2 py-[9px] text-sm outline-none placeholder:text-zinc-500 dark:border-zinc-800 dark:bg-zinc-950"
               >
                 <option value="">Select Company</option>
-                <option value="REZ">Rezora</option>
-                <option value="TSS">Technical Safety Services</option>
+                <option value="ESP">Efficient Solar Panel, LLC</option>
+                <option value="OPT">OptiMinds</option>
               </select>
             </div>
           </div>

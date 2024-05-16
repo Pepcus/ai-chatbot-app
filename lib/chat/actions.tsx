@@ -68,6 +68,8 @@ async function getDetailsFromCustomDataSource(company: any, query:any, chatId: a
       await saveChat(chat)
     }
 
+    resp = resp.replace("Answer:", "").replace("\nSource", "\n\nSource")
+
     return {
       id: nanoid(),
       display: (
