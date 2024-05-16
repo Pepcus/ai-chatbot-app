@@ -10,9 +10,9 @@ export function WelcomeScreen({ session }: WelcomeScreen) {
   let displayName:any = null
   if (userString != null) {
     company = JSON.parse(userString).company
-    if (company === 'TSS') {
+    if (company === 'ESP') {
       displayName = 'Carolin Smith'
-    } else if (company === 'REZ') {
+    } else if (company === 'OPT') {
       displayName = 'Jessica Lang'
     }
   }
