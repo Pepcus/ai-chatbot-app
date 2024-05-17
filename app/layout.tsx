@@ -11,7 +11,7 @@ import { Toaster } from '@/components/ui/sonner'
 export const metadata = {
   metadataBase: new URL(`https://${process.env.VERCEL_URL}`),
   title: {
-    default: 'Pepcus Generative AI Demo Demo',
+    default: 'Pepcus Generative AI Demo',
     template: `%s`
   },
   description: 'An AI-powered chatbot',
