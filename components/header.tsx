@@ -56,7 +56,7 @@ export function Header() {
     <div className="flex items-center justify-center flex-1">
       <span className="text-center">
         <h1 className="text-lg font-semibold">
-          Pepcus Bot - Generative AI Demo Bot 
+          Pepcus' Generative AI Demo Bot 
         </h1>
       </span>
     </div>
