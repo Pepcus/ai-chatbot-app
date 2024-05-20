@@ -52,13 +52,13 @@ export function Header() {
       <React.Suspense fallback={<div className="flex-1 overflow-auto" />}>
         <UserOrLogin />
       </React.Suspense>
-    </div>
-    <div className="flex items-center justify-center flex-1">
+      <div className="flex items-center justify-center flex-1">
       <span className="text-center">
-        <h1 className="text-lg font-semibold">
-          Pepcus Generative AI Demo Bot 
-        </h1>
+      <h1 className="flex items-center flex-1">
+        Pepcus Generative AI Demo 
+      </h1>
       </span>
+      </div>
     </div>
     </header>
   )
