@@ -13,6 +13,16 @@ export default function SignupForm() {
   const router = useRouter()
   const [result, dispatch] = useFormState(signup, undefined)
 
+  let url = window.location.href
+  console.log("============url============", url)
+  const parts = url.split('.');  
+  let subdomain = parts[0].replace('https://', '').replace('http://', '');
+  console.log("============subdomain============", subdomain)
+  if (subdomain.startsWith('www')) {
+    subdomain = subdomain.substring(4);
+  }
+  console.log('Subdomain final:', subdomain);
+
   useEffect(() => {
     if (result) {
       if (result.type === 'error') {
@@ -32,6 +42,7 @@ export default function SignupForm() {
       action={dispatch}
       className="flex flex-col items-center gap-4 space-y-3"
     >
+      <input type="hidden" name="company" value={subdomain} />
       <div className="w-full flex-1 rounded-lg border bg-white px-6 pb-4 pt-8 shadow-md md:w-96 dark:bg-zinc-950">
         <h1 className="mb-3 text-2xl font-bold">Sign up for an account!</h1>
         <div className="w-full">
@@ -89,25 +100,6 @@ export default function SignupForm() {
                 required
                 minLength={6}
               />
-            </div>
-          </div>
-          <div className="mt-4">
-            <label
-              className="mb-3 mt-5 block text-xs font-medium text-zinc-400"
-              htmlFor="company"
-            >
-              Company
-            </label>
-            <div className="relative">
-              <select
-                id="company"
-                name="company"
-                className="peer block w-full rounded-md border bg-zinc-50 px-2 py-[9px] text-sm outline-none placeholder:text-zinc-500 dark:border-zinc-800 dark:bg-zinc-950"
-              >
-                <option value="">Select Company</option>
-                <option value="ESP">Efficient Solar Panel, LLC</option>
-                <option value="OPT">OptiMinds</option>
-              </select>
             </div>
           </div>
         </div>
