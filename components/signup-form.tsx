@@ -16,7 +16,7 @@ export default function SignupForm() {
   let url = window.location.href
   console.log("============url============", url)
   const parts = url.split('.');  
-  let subdomain = parts[0].replace('https://', '').replace('http://', '');
+  let subdomain = parts[0].replace('https://', '').replace('http://', '').replace('-ai', '').toUpperCase();
   console.log("============subdomain============", subdomain)
   if (subdomain.startsWith('www')) {
     subdomain = subdomain.substring(4);
