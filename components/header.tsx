@@ -54,8 +54,8 @@ export function Header() {
       </React.Suspense>
       <div className="flex items-center justify-center flex-1">
       <span className="text-center">
-      <h1 className="flex items-center flex-1">
-        Pepcus Generative AI Demo 
+      <h1 className="flex items-center flex-1 text-blue-500 font-bold">
+        Pepcus Generative AI Demo
       </h1>
       </span>
       </div>
