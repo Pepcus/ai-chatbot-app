@@ -22,5 +22,6 @@ Steps:
 
 Clone the repository from:: https://github.com/Pepcus/ai-chatbot-app
 Make the necessary configuration changes in the .env file.
+Run the SQL queries available in init.sql to your database.
 Install the dependencies from the project root using: pnpm install
 Run the project using: pnpm dev
