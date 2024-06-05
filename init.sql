@@ -30,6 +30,7 @@ CREATE TABLE product (
 
 CREATE TABLE invoice (
     invoice_id SERIAL PRIMARY KEY,
+    invoice_number VARCHAR(50) NOT NULL,
     customer_name VARCHAR(255) NOT NULL,
     customer_email VARCHAR(255) NOT NULL,
     invoice_date DATE NOT NULL,
@@ -44,20 +45,23 @@ CREATE TABLE invoice (
 
 CREATE TABLE invoice_item (
     invoice_item_id SERIAL PRIMARY KEY,
-    invoice_id INT REFERENCES invoices(invoice_id) ON DELETE CASCADE,
-    product_id INT REFERENCES products(product_id),
+    invoice_id INT NOT NULL,
+    product_id INT NOT NULL,
     quantity INT NOT NULL,
     unit_price NUMERIC(10, 2) NOT NULL,
     tax_amount NUMERIC(10, 2) NOT NULL,
-    total_price NUMERIC(10, 2) GENERATED ALWAYS AS (quantity * unit_price + tax_amount) STORED
+    total_price NUMERIC(10, 2) GENERATED ALWAYS AS (quantity * unit_price + tax_amount) STORED,
+    FOREIGN KEY (invoice_id) REFERENCES invoice(invoice_id) ON DELETE CASCADE,
+    FOREIGN KEY (product_id) REFERENCES product(product_id)
 );
 
 CREATE TABLE payment (
     payment_id SERIAL PRIMARY KEY,
-    invoice_id INT REFERENCES invoices(invoice_id) ON DELETE CASCADE,
+    invoice_id INT NOT NULL,
     payment_date DATE NOT NULL,
     amount NUMERIC(10, 2) NOT NULL,
     payment_method VARCHAR(50) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (invoice_id) REFERENCES invoice(invoice_id) ON DELETE CASCADE
 );
