@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, ChangeEvent, FormEvent, useRef } from 'react';
+import { useRouter } from 'next/navigation';
 
 interface InvoiceDetails {
   [key: string]: string;
@@ -16,7 +17,7 @@ const FileUpload: React.FC = () => {
   const [message, setMessage] = useState<string>('');
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
-
+  const router = useRouter();
 
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
@@ -81,6 +82,38 @@ const FileUpload: React.FC = () => {
     }
   };
 
+  const handleAccept = async () => {
+    const API_SERVER_URL = process.env.API_SERVER_URL;
+    const API_CLIENT_SECRET = process.env.API_CLIENT_SECRET;
+
+    try {
+      const response = await fetch(`${API_SERVER_URL}/api/invoice/accept`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${API_CLIENT_SECRET}`
+        }
+      });
+
+      if (response.ok) {
+        setMessage('Invoice accepted successfully.');
+      } else {
+        const errorText = await response.text();
+        setMessage(`Accept action failed: ${errorText}`);
+      }
+    } catch (error) {
+      console.error('Error accepting invoice:', error);
+      setMessage('Accept action failed due to a network or server error.');
+    }
+  };
+
+  const handleReject = () => {
+    // Clear the state
+    setFiles([]);
+    setMessage('');
+    setUploadedFiles([]);
+    if (fileInputRef.current) fileInputRef.current.value = ''; // Reset file input
+  };
+
   return (
     <div className="flex flex-col items-center justify-start w-full h-screen bg-gray-100 px-4 py-8">
       <div className="w-full max-w-7xl mx-auto bg-white rounded-lg shadow-lg p-8">
@@ -107,30 +140,47 @@ const FileUpload: React.FC = () => {
             {message}
           </div>
         )}
-        <div className="overflow-x-auto mt-6">
-          <table className="min-w-full text-sm text-left text-gray-500">
-            <thead className="bg-gray-50 text-xs text-gray-700 uppercase">
-              <tr>
-                <th className="px-6 py-3">Uploaded File</th>
-                <th className="px-6 py-3">Details</th>
-              </tr>
-            </thead>
-            <tbody>
-              {uploadedFiles.map((file, index) => (
-                <tr key={index} className="bg-white border-b">
-                  <td className="px-6 py-4">{file.filename}</td>
-                  <td className="px-6 py-4 whitespace-pre-wrap">
-                    {Object.entries(file.details).map(([key, value]) => (
-                      <div key={key}>
-                        <strong>{key}:</strong> {value}
-                      </div>
-                    ))}
-                  </td>
+        {uploadedFiles.length > 0 && (
+          <div className="overflow-x-auto mt-6">
+            <table className="min-w-full text-sm text-left text-gray-500">
+              <thead className="bg-gray-50 text-xs text-gray-700 uppercase">
+                <tr>
+                  <th className="px-6 py-3">Uploaded File</th>
+                  <th className="px-6 py-3">Details</th>
+                  <th className="px-6 py-3">Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {uploadedFiles.map((file, index) => (
+                  <tr key={index} className="bg-white border-b">
+                    <td className="px-6 py-4">{file.filename}</td>
+                    <td className="px-6 py-4 whitespace-pre-wrap">
+                      {Object.entries(file.details).map(([key, value]) => (
+                        <div key={key}>
+                          <strong>{key}:</strong> {value}
+                        </div>
+                      ))}
+                    </td>
+                    <td className="px-6 py-4">
+                      <button
+                        onClick={handleAccept}
+                        className="bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded mr-2 transition-colors duration-150"
+                      >
+                        Accept
+                      </button>
+                      <button
+                        onClick={handleReject}
+                        className="bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded transition-colors duration-150"
+                      >
+                        Reject
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
     </div>
   );
