@@ -17,6 +17,7 @@ const FileUpload: React.FC = () => {
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
       setFiles(Array.from(event.target.files));
@@ -31,8 +32,13 @@ const FileUpload: React.FC = () => {
       return;
     }
 
-    const API_SERVER_URL = 'http://127.0.0.1:8000';
-    const API_CLIENT_SECRET = 'YXBpX3VzZXI6OXlQdlJtRDV3WA==';
+    const API_SERVER_URL = process.env.API_SERVER_URL;
+    const API_CLIENT_SECRET = process.env.API_CLIENT_SECRET;
+
+    if (!API_SERVER_URL || !API_CLIENT_SECRET) {
+      setMessage('API configuration is missing.');
+      return;
+    }
 
     try {
       const uploadedFilesDetails: UploadedFile[] = [];
