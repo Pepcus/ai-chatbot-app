@@ -5,7 +5,7 @@ export const authConfig = {
   pages: {
     signIn: '/login',
     newUser: '/signup'
-    },
+  },
   callbacks: {
     async authorized({ auth, request: { nextUrl } }) {
       const isLoggedIn = !!auth?.user
@@ -13,7 +13,7 @@ export const authConfig = {
       const isOnSignupPage = nextUrl.pathname.startsWith('/signup')
       const isOnInvoicePage = nextUrl.pathname.startsWith('/invoice')
       if (isLoggedIn) {
-        if (isOnLoginPage || isOnSignupPage||isOnInvoicePage) {
+        if (isOnLoginPage || isOnSignupPage|| isOnInvoicePage) {
           return Response.redirect(new URL('/', nextUrl))
         }
       }
