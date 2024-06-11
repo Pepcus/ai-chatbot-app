@@ -15,6 +15,8 @@ module.exports = {
   },
   env: {
     API_SERVER_URL: process.env.API_SERVER_URL,
-    API_CLIENT_SECRET: process.env.API_CLIENT_SECRET
+    API_CLIENT_SECRET: process.env.API_CLIENT_SECRET,
+    TECH_MANAGER_EMAIL:process.env.TECH_MANAGER_EMAIL,
+    TECH_MANAGER_PASSWORD:process.env.TECH_MANAGER_PASSWORD
   }
 };

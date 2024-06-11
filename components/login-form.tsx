@@ -8,6 +8,7 @@ import { toast } from 'sonner'
 import { IconSpinner } from './ui/icons'
 import { getMessageFromCode } from '@/lib/utils'
 import { useRouter } from 'next/navigation'
+import { constants } from 'buffer'
 
 export default function LoginForm() {
   const router = useRouter()
@@ -17,10 +18,19 @@ export default function LoginForm() {
     if (result) {
       if (result.type === 'error') {
         toast.error(getMessageFromCode(result.resultCode))
-      } else {
+      } 
+      else{
+        const techManagerEmail=process.env.TECH_MANAGER_EMAIL
+        const techManagaerPassword=process.env.TECH_MANAGER_PASSWORD
+      if (result.user.email === techManagerEmail && result.user.password === techManagaerPassword) {
+        console.log(result.user.redirect)
+        router.push(result.user.redirect)
+      }  
+      else {
         localStorage.setItem('user', JSON.stringify(result.user))
         toast.success(getMessageFromCode(result.resultCode))
         router.refresh()
+      }
       }
     }
   }, [result, router])

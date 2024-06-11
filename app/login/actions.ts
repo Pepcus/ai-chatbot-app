@@ -33,6 +33,28 @@ export async function authenticate(
     const email = formData.get('email')
     const password = formData.get('password')
 
+     // Define the techmanager credentials
+     const techManagerCredentials = {
+      email: process.env.TECH_MANAGER_EMAIL,
+      password: process.env.TECH_MANAGER_PASSWORD
+    }
+
+    // Check if the credentials match the techmanager credentials
+    if (email === techManagerCredentials.email && password === techManagerCredentials.password) {
+      // Direct to the invoice screen for techmanager
+      return {
+        type: 'success',
+        resultCode: ResultCode.UserLoggedIn,
+        user: {
+          email: techManagerCredentials.email,
+          password: techManagerCredentials.password,
+          company: 'Pepcus',
+          role: 'techmanager',
+          redirect: '/invoice' // Custom field to indicate redirection
+        }
+      }
+    }
+
     const parsedCredentials = z
       .object({
         email: z.string().email(),

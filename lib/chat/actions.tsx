@@ -25,6 +25,7 @@ async function getDetailsFromCustomDataSource(company: any, query:any, chatId: a
     console.log("===chatId===========", chatId);
     let resp: any = null;
     try {
+      company="OPT"
       const response = await fetch(`${API_SERVER_URL}/api/response?company=${company}&query=${query}&chat_id=${chatId}`, {
         method: 'GET',
         headers: {
