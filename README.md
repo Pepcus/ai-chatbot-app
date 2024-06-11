@@ -10,7 +10,7 @@ Prerequisits:
 Setup Steps:
 1) Login to your vercel account and create a postgres database there.
 
-2) Clone the repository from https://github.com/Pepcus/ai-chatbot-app on your computer.
+2) Checkout the code from from https://github.com/Pepcus/ai-chatbot-app (main branch) on your computer.
 
 3) Create a .env file in the root of the project and add the following configuration:
 
