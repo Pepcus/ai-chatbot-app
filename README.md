@@ -1,8 +1,11 @@
 Prerequisits:
 
 1) Following softwares are installed on your computer
+
    node 20.11.0
+   
    npm 10.5.0
+   
    pnpm 8.15.4
 
 2) You have an account on Vercel. (https://vercel.com/signup)
