@@ -13,14 +13,19 @@ Setup Steps:
 2) Clone the repository from https://github.com/Pepcus/ai-chatbot-app on your computer.
 
 3) Create a .env file in the root of the project and add the following configuration:
-   OPENAI_API_KEY: Your OpenAI API key
-   AUTH_SECRET=Generate a random secret: Generate Secret or use openssl rand -base64 32
-   NEXTAUTH_URL="http://localhost:3000"
-   API_SERVER_URL="http://127.0.0.1:8000"
-   API_CLIENT_SECRET=your API clinet secret (A base 64 string of the API username and password)
-   
-4) Run the SQL queries available in init.sql to your database.
 
-5) Install the dependencies from the project root using: pnpm install
+   a) OPENAI_API_KEY: Your OpenAI API key
+   
+   b) AUTH_SECRET=Generate a random secret: Generate Secret or use openssl rand -base64 32
+   
+   c) NEXTAUTH_URL="http://localhost:3000"
+   
+   d) API_SERVER_URL="http://127.0.0.1:8000"
+   
+   e) API_CLIENT_SECRET=your API clinet secret (A base 64 string of the API username and password)
+   
+5) Run the SQL queries available in init.sql to your database.
+
+6) Install the dependencies from the project root using: pnpm install
 
 7) Run the project using: pnpm dev
